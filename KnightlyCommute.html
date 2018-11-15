@@ -54,7 +54,7 @@
           render(); // may be make a call to your render function
         })
 
-        let texture = THREE.ImageUtils.loadTexture( "map.png" );
+        let texture = THREE.ImageUtils.loadTexture( "mapper.png" );
         let material = new THREE.MeshLambertMaterial({ map : texture });
         let plane = new THREE.Mesh(new THREE.PlaneGeometry(23.2, 30), material);
         plane.rotation.x = Math.PI / 2;
@@ -78,6 +78,6 @@
     </script>
   </head>
   <body onload="mainFunction();">
-  <h1>John Hacker ID=jo486831</h1>
+  <h1>Knightly Commute</h1>
   </body>
 </html>
