@@ -28,7 +28,7 @@
         scene.add(camera);
 
         let light = new THREE.PointLight(0xffffff, 1, 100);
-        light.position.set(0, 50, 1);
+        light.position.set(0, 100, 1);
         scene.add(light);
 
         let render = function ()
@@ -39,29 +39,28 @@
         let cameraControls = new THREE.OrbitControls( camera, renderer.domElement  );
         cameraControls.addEventListener("change", render, false);
 
-        let mat = new THREE.MeshPhongMaterial({color: 0x2194ce})
+        let mtlLoader =  new THREE.MTLLoader();
 
-        // once material is read initiate the obj Loading
-        let objLoader = new THREE.OBJLoader();
-        let table;
-        // load a resource
-        objLoader.load('table.obj' ,function(object)
-        {
-          object.position.x = 10;
-          object.material = mat;
-          table = object;
-          scene.add( object );
-          render(); // may be make a call to your render function
-        })
+        mtlLoader.load("./computerDesk/mesa_pc.mtl", function(materials){
+          materials.preload();
+
+          let objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials(materials);
+          objLoader.load("./computerDesk/mesa_pc.obj", function(obj){
+            obj.position.x = 10;
+            scene.add(obj);
+            render();
+          });
+        });
 
         let texture = THREE.ImageUtils.loadTexture( "mapper.png" );
         let material = new THREE.MeshLambertMaterial({ map : texture });
-        let plane = new THREE.Mesh(new THREE.PlaneGeometry(23.2, 30), material);
+        let plane = new THREE.Mesh(new THREE.PlaneGeometry(21.6, 28.275), material);
         plane.rotation.x = Math.PI / 2;
         plane.rotation.z = Math.PI;
         plane.rotation.y = Math.PI;
         scene.add(plane);
-        plane.position.set(0, 32, 0);
+        plane.position.set(0, 46.4, 0);
 
         render();
 
