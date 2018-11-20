@@ -30,6 +30,17 @@
         let light = new THREE.PointLight(0xffffff, 1, 100);
         light.position.set(0, 100, 1);
         scene.add(light);
+        let ambient = new THREE.AmbientLight(0xffffff, 0.3);
+        scene.add(ambient);
+          
+          let  envLoader = new THREE.CubeTextureLoader();
+          envLoader.setPath("./cubeMap/");
+          let textureCube = envLoader.load([
+              "px.png", "nx.png",
+              "py.png", "ny.png",
+              "pz.png", "nz.png"
+          ]);
+          scene.background = textureCube;
 
         let render = function ()
         {
@@ -55,12 +66,22 @@
 
         let texture = THREE.ImageUtils.loadTexture( "mapper.png" );
         let material = new THREE.MeshLambertMaterial({ map : texture });
+        let wood = new THREE.TextureLoader().load("./woodTex.png");
+        let floorMaterial = new THREE.MeshLambertMaterial({side: THREE.DoubleSide, map: wood});
         let plane = new THREE.Mesh(new THREE.PlaneGeometry(21.6, 28.275), material);
+        let floorplane = new THREE.Mesh(new THREE.PlaneGeometry(125, 125), floorMaterial);
         plane.rotation.x = Math.PI / 2;
         plane.rotation.z = Math.PI;
         plane.rotation.y = Math.PI;
+
         scene.add(plane);
+        render();
         plane.position.set(0, 46.4, 0);
+          floorplane.rotation.x = Math.PI / 2;
+          floorplane.rotation.z = Math.PI;
+          floorplane.rotation.y = Math.PI;
+          floorplane.position.set(5, -1, 0);
+          scene.add(floorplane);
 
         render();
 
