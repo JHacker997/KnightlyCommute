@@ -75,7 +75,16 @@
         plane.rotation.y = Math.PI;
 
         scene.add(plane);
-        render();
+        
+        let cylinderGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.2);
+        let nodeMaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
+        let cylinder1 = new THREE.Mesh(cylinderGeometry, nodeMaterial);
+        let cylinder2 = new THREE.Mesh(cylinderGeometry, nodeMaterial);
+        scene.add(cylinder1);
+        scene.add(cylinder2);
+        cylinder1.position.set(1.7, 46.42, -0.42);
+        cylinder2.position.set(-6.8, 46.42, -0.10);
+
         plane.position.set(0, 46.4, 0);
           floorplane.rotation.x = Math.PI / 2;
           floorplane.rotation.z = Math.PI;
