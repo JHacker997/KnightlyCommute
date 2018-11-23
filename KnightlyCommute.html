@@ -23,7 +23,7 @@
 
         let aspect = window.innerWidth / window.innerHeight;
         let camera = new THREE.PerspectiveCamera( 50, aspect, 1, 1000 );
-        camera.position.y = 80;
+        camera.position.y = 150;
         camera.position.z = 5;
         scene.add(camera);
 
@@ -52,13 +52,15 @@
 
         let mtlLoader =  new THREE.MTLLoader();
 
-        mtlLoader.load("./computerDesk/mesa_pc.mtl", function(materials){
+        mtlLoader.load("./computerDesk/Magis_XZ3_200_mat(1).mtl", function(materials){
           materials.preload();
 
           let objLoader = new THREE.OBJLoader();
           objLoader.setMaterials(materials);
-          objLoader.load("./computerDesk/mesa_pc.obj", function(obj){
+          objLoader.load("./computerDesk/Magis_XZ3_200_mat(1).obj", function(obj){
             obj.position.x = 10;
+            obj.rotation.x = -Math.PI / 2;
+            obj.rotation.z = Math.PI / 2;
             scene.add(obj);
             render();
           });
@@ -68,15 +70,15 @@
         let material = new THREE.MeshLambertMaterial({ map : texture });
         let wood = new THREE.TextureLoader().load("./woodTex.png");
         let floorMaterial = new THREE.MeshLambertMaterial({side: THREE.DoubleSide, map: wood});
-        let plane = new THREE.Mesh(new THREE.PlaneGeometry(21.6, 28.275), material);
-        let floorplane = new THREE.Mesh(new THREE.PlaneGeometry(125, 125), floorMaterial);
+        let plane = new THREE.Mesh(new THREE.PlaneGeometry(21.6*2, 28.275*2), material);
+        let floorplane = new THREE.Mesh(new THREE.PlaneGeometry(400, 200), floorMaterial);
         plane.rotation.x = Math.PI / 2;
         plane.rotation.z = Math.PI;
         plane.rotation.y = Math.PI;
 
         scene.add(plane);
         
-        let cylinderGeometry = new THREE.CylinderGeometry(0.2, 0.2, 2);
+        let cylinderGeometry = new THREE.CylinderGeometry(0.2*2, 0.2*2, 2*2);
         let nodeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
         let cylinderArray = [];
         let numNodes = 22;
@@ -86,31 +88,114 @@
           scene.add(cylinderArray[i]);
         }
 
-        cylinderArray[0].position.set(1.7, 46.42, -0.42);
-        cylinderArray[1].position.set(-6.8, 46.42, -0.10);
-        cylinderArray[2].position.set(-0.48, 46.42, 1.3);
-        cylinderArray[3].position.set(-4.15, 46.42, 0.95);
-        cylinderArray[4].position.set(-6.7, 46.42, -3.55);
-        cylinderArray[5].position.set(-4.75, 46.42, -7.5);
-        cylinderArray[6].position.set(0.5, 46.42, -7.6);
-        cylinderArray[7].position.set(1.61, 46.42, -7.35);
-        cylinderArray[8].position.set(2.3, 46.42, -6.29);
-        cylinderArray[9].position.set(2.62, 46.42, -5.22);
-        cylinderArray[10].position.set(3.55, 46.42, -3.85);
-        cylinderArray[11].position.set(6.2, 46.42, -12.2);
-        cylinderArray[12].position.set(-8.9, 46.42, -12.2);
-        cylinderArray[13].position.set(-8.9, 46.42, -8.4);
-        cylinderArray[14].position.set(-8.9, 46.42, -3.35);
-        cylinderArray[15].position.set(-8.77, 46.42, 1.22);
-        cylinderArray[16].position.set(-9.3, 46.42, 5.45);
-        cylinderArray[17].position.set(-9.1, 46.42, 11.2);
-        cylinderArray[18].position.set(-1.29, 46.42, 10.8);
-        cylinderArray[19].position.set(5.8, 46.42, 8.3);
-        cylinderArray[20].position.set(3.55, 46.42, 5.2);
-        cylinderArray[21].position.set(3.17, 46.42, 2.62);
+        cylinderArray[0].position.set(1.7*2, 74.42, -0.42*2);
+        cylinderArray[1].position.set(-0.48*2, 74.42, 1.3*2);
+        cylinderArray[2].position.set(-4.15*2, 74.42, 0.95*2);
+        cylinderArray[3].position.set(-6.8*2, 74.42, -0.10*2);
+        cylinderArray[4].position.set(-6.7*2, 74.42, -3.55*2);
+        cylinderArray[5].position.set(-4.75*2, 74.42, -7.5*2);
+        cylinderArray[6].position.set(0.5*2, 74.42, -7.6*2);
+        cylinderArray[7].position.set(1.61*2, 74.42, -7.35*2);
+        cylinderArray[8].position.set(2.3*2, 74.42, -6.29*2);
+        cylinderArray[9].position.set(2.62*2, 74.42, -5.22*2);
+        cylinderArray[10].position.set(3.55*2, 74.42, -3.85*2);
+        cylinderArray[11].position.set(6.2*2, 74.42, -12.2*2);
+        cylinderArray[12].position.set(-8.9*2, 74.42, -12.2*2);
+        cylinderArray[13].position.set(-8.9*2, 74.42, -8.4*2);
+        cylinderArray[14].position.set(-8.9*2, 74.42, -3.35*2);
+        cylinderArray[15].position.set(-8.77*2, 74.42, 1.22*2);
+        cylinderArray[16].position.set(-9.3*2, 74.42, 5.45*2);
+        cylinderArray[17].position.set(-9.1*2, 74.42, 11.2*2);
+        cylinderArray[18].position.set(-1.29*2, 74.42, 10.8*2);
+        cylinderArray[19].position.set(5.8*2, 74.42, 8.3*2);
+        cylinderArray[20].position.set(3.55*2, 74.42, 5.2*2);
+        cylinderArray[21].position.set(3.17*2, 74.42, 2.62*2);
 
+        let linematerial = new THREE.LineBasicMaterial({
+          color: 0x0000ff
+        });
 
-        plane.position.set(0, 46.4, 0);
+        let lineArray = [];
+
+        let linegeometry;
+
+        function createLine(x1, y1, x2, y2) {
+          let liner = new THREE.Geometry();
+          liner.vertices.push(
+            new THREE.Vector3(x1*2, 74.8, y1*2),
+            new THREE.Vector3( x2*2, 74.8, y2*2)
+          );
+          linegeometry = liner;
+        }
+        
+        function addLine(geometry, index) {
+          lineArray.push(new THREE.Line(geometry, linematerial ));
+          scene.add(lineArray[index]);
+        }
+
+        createLine(3.17, 2.62, 3.55, 5.2);
+        addLine(linegeometry, 0);
+        createLine(3.17, 2.62, 1.7, -0.42);
+        addLine(linegeometry, 1);
+        createLine(1.7, -0.42, -0.48, 1.3);
+        addLine(linegeometry, 2);
+        createLine(-0.48, 1.3, -4.15, 0.95);
+        addLine(linegeometry, 3);
+        createLine(-4.15, 0.95, -6.8, -0.10);
+        addLine(linegeometry, 4);
+        createLine(-6.8, -0.10,-6.7, -3.55);
+        addLine(linegeometry, 5);
+        createLine(-6.7, -3.55, -4.75, -7.5);
+        addLine(linegeometry, 6);
+        createLine(-4.75, -7.5, 0.5, -7.6);
+        addLine(linegeometry, 7);
+        createLine(0.5, -7.6, 1.61, -7.35);
+        addLine(linegeometry, 8);
+        createLine(1.61, -7.35, 2.3, -6.29);
+        addLine(linegeometry, 9);
+        createLine(2.3, -6.29, 2.62, -5.22);
+        addLine(linegeometry, 10);
+        createLine(2.62, -5.22, 3.55, -3.85);
+        addLine(linegeometry, 11);
+        createLine(3.55, -3.85, 1.7, -0.42);
+        addLine(linegeometry, 12);
+        createLine(2.3, -6.29, 6.2, -12.2);
+        addLine(linegeometry, 13);
+        createLine(1.61, -7.35, 6.2, -12.2);
+        addLine(linegeometry, 14);
+        createLine(0.5, -7.6, 6.2, -12.2);
+        addLine(linegeometry, 15);
+        createLine(6.2, -12.2, -8.9, -12.2);
+        addLine(linegeometry, 16);
+        createLine(-8.9, -12.2, -8.9, -8.4);
+        addLine(linegeometry, 17);
+        createLine(-8.9, -8.4, -4.75, -7.5);
+        addLine(linegeometry, 18);
+        createLine(-8.9, -8.4, -8.9, -3.35);
+        addLine(linegeometry, 19);
+        createLine(-8.9, -3.35, -6.7, -3.55);
+        addLine(linegeometry, 20);
+        createLine(-8.9, -3.35, -8.77, 1.22);
+        addLine(linegeometry, 21);
+        createLine(-8.77, 1.22, -6.8, -0.10);
+        addLine(linegeometry, 22);
+        createLine(-8.77, 1.22, -9.3, 5.45);
+        addLine(linegeometry, 23);
+        createLine(-9.3, 5.45, -4.15, 0.95);
+        addLine(linegeometry, 24);
+        createLine(-9.3, 5.45,-9.1, 11.2);
+        addLine(linegeometry, 25);
+        createLine(-9.1, 11.2, -1.29, 10.8);
+        addLine(linegeometry, 26);
+        createLine(-1.29, 10.8, 5.8, 8.3);
+        addLine(linegeometry, 27);
+        createLine(5.8, 8.3, 3.55, 5.2);
+        addLine(linegeometry, 28);
+
+        line = new THREE.Line( linegeometry, linematerial );
+        scene.add( line );
+
+        plane.position.set(0, 74.6, 0);
           floorplane.rotation.x = Math.PI / 2;
           floorplane.rotation.z = Math.PI;
           floorplane.rotation.y = Math.PI;
