@@ -79,33 +79,37 @@
 
         var _ = Infinity;
         var e = [
-          [ _, _, _, _, _, _, _, _, 4, 2, 3 ],
-          [ _, _, 5, 2, 2, _, _, _, _, _, _ ],
-          [ _, 5, _, _, _, 1, 4, _, _, _, _ ],
-          [ _, 2, _, _, 3, 6, _, 3, _, _, _ ],
-          [ _, 2, _, 3, _, _, _, 4, 3, _, _ ],
-          [ _, _, 1, 6, _, _, 2, 5, _, _, _ ],
-          [ _, _, 4, _, _, 2, _, 5, _, _, 3 ],
-          [ _, _, _, 3, 4, 5, 5, _, 3, 2, 4 ],
-          [ 4, _, _, _, 3, _, _, 3, _, 3, _ ],
-          [ 2, _, _, _, _, _, _, 2, 3, _, 3 ],
-          [ 3, _, _, _, _, _, 3, 4, _, 3, _ ]
+          [ _, 2, _, _, 1, 5, _, _, _, _, _ ],
+          [ 2, _, 3, _, _, _, _, _, _, _, _ ],
+          [ _, 3, _, 8, _, _, _, _, _, _, _ ],
+          [ _, _, 8, _, _, _, _, _, _, _, _ ],
+          [ 1, _, _, _, _, 2, 5, _, _, _, _ ],
+          [ 5, _, _, _, 2, _, 3, _, _, _, _ ],
+          [ _, _, _, _, 5, 3, _, 2, _, _, _ ],
+          [ _, _, _, _, _, _, 2, _, 7, _, _ ],
+          [ _, _, _, _, _, _, _, 7, _, 1, 5 ],
+          [ _, _, _, _, _, _, _, _, 1, _, 3 ],
+          [ _, _, _, _, _, _, _, _, 5, 3, _ ]
         ];
 
         // Compute the shortest paths from vertex number 1 to each other vertex
         // in the graph.
-        var shortestPathInfo = shortestPath(e, 11, 1);
+        var shortestPathInfo = shortestPath(e, 11, 0, 10);
 
         // Get the shortest path from vertex 1 to vertex 6.
-        var path1to6 = constructPath(shortestPathInfo, 6);
+        // var path1to6 = constructPath(shortestPathInfo, 6);
 
         console.log(shortestPathInfo);
-        console.log(path1to6);
+        //console.log(path1to6);
 
 
     }
 
-    function shortestPath(edges, numVertices, startVertex) {
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function shortestPath(edges, numVertices, startVertex, endVertex) {
 
     var done = new Array(numVertices);
       done[startVertex] = true;
@@ -114,11 +118,19 @@
 
 
       for (var i = 0; i < numVertices; i++) {
-        // Check to see if the end node is right next to the start node
+        // If there is an edge between the starting vertex and this vertex, set the shortest path equal to that path length
         pathLengths[i] = edges[startVertex][i];
 
-        // If it is, set the parent of the end node to the start node
+        // If we do, set the parent of the end node to the start node
         if (edges[startVertex][i] != Infinity) {
+
+            // Pause here and light up edges[startVertex][i]
+            // Light up pathLengths[i]
+            console.log("Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[i]);
+            await sleep(1000);
+            
+
+
             predecessors[i] = startVertex;
         }
       }
@@ -143,6 +155,20 @@
             }
         }
 
+        // PAUSE: light up edges[predecessor[closest]][closest]
+          // temp = closest
+          // while (temp != startVertex)
+          //    light up temp[predecessor[temp]][temp]
+          //    temp = predecessor[temp]
+
+          var temp = closest;
+          while (temp != startVertex){
+              console.log("Light up [" + predecessors[temp] + "][" + temp + "]");
+              temp = predecessors[temp];
+          }
+
+          await sleep(3000);
+
         // we've looked at the closest node
         done[closest] = true;
 
@@ -156,16 +182,41 @@
               // closest node and this one
               var possiblyCloserDistance = pathLengths[closest] + edges[closest][j];
 
+              // PAUSE: light up edges[closest][j]
+              if (edges[closest][j] != Infinity){
+                console.log("Currently inspecting edge between [" + closest + "] and [" + j + "]");
+                await sleep(1000);
+              }
+
               // If this distance is shorter than the current stored path length
               if (possiblyCloserDistance < pathLengths[j]) {
 
                 // Replace the path length with the shorter one and set the parent of this node to the closest node
+
+                // PAUSE: light up pathlength[j]
+                console.log("Changing shortest pathlength of " + j + " from " +pathLengths[j] + " to " + possiblyCloserDistance);
+
+                await sleep(1000);
+
+                // unlight edges[closest][j] and pathlength[j]
+
                   pathLengths[j] = possiblyCloserDistance;
                   predecessors[j] = closest;
               }
             }
         }
+
+        // POTENTIAL PAUSE: light up red pathlengths[closest] to mark it done
+
+          // temp = closest
+          // while (temp != startVertex)
+          //    UNlight up temp[predecessor[temp]][temp]
+          //    temp = predecessor[temp]
       }
+
+      constructPath({ "startVertex": startVertex,
+               "pathLengths": pathLengths,
+               "predecessors": predecessors }, endVertex);
 
       return { "startVertex": startVertex,
                "pathLengths": pathLengths,
@@ -182,9 +233,14 @@
         // Unshift just adds the element to the beginning of the array
         path.unshift(endVertex);
 
+        // Light up edges[predecessors[endVertex][endVertex]
+
+
         // Once we've added the current node, we move on to the parent node
         endVertex = shortestPathInfo.predecessors[endVertex];
       }
+
+      console.log(path);
 
       return path;
   }
