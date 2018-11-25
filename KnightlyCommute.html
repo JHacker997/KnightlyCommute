@@ -122,6 +122,7 @@
 
         function createLineVector(v1, v2, index, addPoints) {
            linematerial = new THREE.LineBasicMaterial({color: 0x0000ff});
+
           let liner = new THREE.Geometry();
           if(addPoints != null)
           {
@@ -382,6 +383,14 @@
     
 
         render();
+		
+		function colorChange(index, color) {
+			lineArray[index].material.color = new THREE.Color(color);
+			lineArray[index].material.needsUpdate = true;
+			render();
+		};
+		
+		
 
         let resize = function ()
         {
@@ -390,6 +399,8 @@
           camera.updateProjectionMatrix();
           render();
         };
+		
+		colorChange(0, 0xff0000);
 
         colorChange(0, 0xff0000);
 
