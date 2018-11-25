@@ -123,6 +123,7 @@
         let lineArray = [];
 
         function createLineVector(v1, v2, index, addPoints) {
+		  linematerial = new THREE.LineBasicMaterial({color: 0x0000ff});
           let liner = new THREE.Geometry();
           liner.vertices.push(
             new THREE.Vector3(v1.x, 74.8, v1.z),
@@ -213,6 +214,14 @@
           scene.add(floorplane);
 
         render();
+		
+		function colorChange(index, color) {
+			lineArray[index].material.color = new THREE.Color(color);
+			lineArray[index].material.needsUpdate = true;
+			render();
+		};
+		
+		
 
         let resize = function ()
         {
@@ -221,6 +230,8 @@
           camera.updateProjectionMatrix();
           render();
         };
+		
+		colorChange(0, 0xff0000);
 
         window.addEventListener("resize",resize, false)
       }
