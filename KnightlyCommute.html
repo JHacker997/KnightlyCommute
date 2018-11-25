@@ -84,7 +84,7 @@
         let intermedMaterial = new THREE.MeshLambertMaterial({color:0x00ff00});
         let nodeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
         let cylinderArray = [];
-        let intermedNodesArray = [[], []];
+        let intermedNodesArray = new Array();
         let numNodes = 22;
         for(let i = 0; i < numNodes; i++)
         {
@@ -116,19 +116,36 @@
         cylinderArray[21].position.set(3.17*multSize, mapLevel, 2.62*multSize);
         
 
-        let linematerial = new THREE.LineBasicMaterial({
-          color: 0x0000ff
-        });
+        let linematerial;
 
         let lineArray = [];
 
         function createLineVector(v1, v2, index, addPoints) {
+           linematerial = new THREE.LineBasicMaterial({color: 0x0000ff});
           let liner = new THREE.Geometry();
-          liner.vertices.push(
-            new THREE.Vector3(v1.x, 74.8, v1.z),
-            new THREE.Vector3(v2.x, 74.8, v2.z)
-          );
+          if(addPoints != null)
+          {
+            liner.vertices.push(
+              new THREE.Vector3(v1.x, 74.8, v1.z)
+            );
+            addPoints.forEach(function(point){
+              liner.vertices.push(
+              new THREE.Vector3(point.position.x, 74.8, point.position.z)
+              );
+            });
+            liner.vertices.push(
+              new THREE.Vector3(v2.x, 74.8, v2.z)
+            );
+          }
+          else
+          {
+            liner.vertices.push(
+              new THREE.Vector3(v1.x, 74.8, v1.z),
+              new THREE.Vector3(v2.x, 74.8, v2.z)
+            );
+          } 
           
+
           lineArray.push(new THREE.Line(liner, linematerial ));
           scene.add(lineArray[index]);
         }
@@ -136,73 +153,217 @@
         let numEdges = 0;
 
         // intermediary nodes
-        // let numIntNodes = 2;
-        // for(let i = 0; i < numIntNodes; i++)
-        // {
-        //   intermedNodesArray[0].push(new THREE.Mesh(cylinderGeometry, intermedMaterial));
-        //   scene.add(intermedNodesArray[0][i]);
-        // }
+        let numPerTier = [];
+        function createInterNodes(numInt, indexTier)
+        {
+          numPerTier.push(numInt);
+          intermedNodesArray[indexTier] = new Array();
+          for(let i = 0; i < numPerTier[indexTier]; i++)
+          {
+            intermedNodesArray[indexTier].push(new THREE.Mesh(cylinderGeometry, intermedMaterial));
+            scene.add(intermedNodesArray[indexTier][i]);
+          }
+        }
+        createInterNodes(2, numEdges);
         
-        // intermedNodesArray[numEdges][0].position.set(cylinderArray[1].position.x + 2, mapLevel, cylinderArray[1].position.z - 0.5);
-        // intermedNodesArray[numEdges][1].position.set(cylinderArray[1].position.x + 3, mapLevel, cylinderArray[0].position.z + 2);
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[1].position.x + 3, mapLevel, cylinderArray[0].position.z + 2);
 
-        createLineVector(cylinderArray[0].position, cylinderArray[1].position, numEdges++);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[1].position.x + 2, mapLevel, cylinderArray[1].position.z - 0.5);
+
+        createLineVector(cylinderArray[0].position, cylinderArray[1].position, numEdges++, intermedNodesArray[0]);
+
+        createInterNodes(1, numEdges);
         
-        createLineVector(cylinderArray[1].position, cylinderArray[2].position, numEdges++);
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[1].position.x - 2, mapLevel, cylinderArray[1].position.z + 0.75);
+
+        createLineVector(cylinderArray[1].position, cylinderArray[2].position, numEdges++, intermedNodesArray[1]);
         
+        createInterNodes(0, numEdges);
+
         createLineVector(cylinderArray[2].position, cylinderArray[3].position, numEdges++);
+
+        createInterNodes(3, numEdges);
         
-        createLineVector(cylinderArray[3].position, cylinderArray[4].position, numEdges++);
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[3].position.x - 1.8, mapLevel, cylinderArray[3].position.z - 2.5);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[3].position.x - 1.5, mapLevel, cylinderArray[3].position.z - 4);
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[3].position.x - 0.5, mapLevel, cylinderArray[3].position.z - 5.5);
         
-        createLineVector(cylinderArray[4].position, cylinderArray[5].position, numEdges++);
+        createLineVector(cylinderArray[3].position, cylinderArray[4].position, numEdges++, intermedNodesArray[3]);
+
+        createInterNodes(4, numEdges);
         
-        createLineVector(cylinderArray[5].position, cylinderArray[6].position, numEdges++);
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[4].position.x - 1, mapLevel, cylinderArray[4].position.z - 2);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[4].position.x - 1.5, mapLevel, cylinderArray[4].position.z - 3);
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[4].position.x - 1.5, mapLevel, cylinderArray[4].position.z - 4);
+        intermedNodesArray[numEdges][3].position.set(cylinderArray[4].position.x + 1, mapLevel, cylinderArray[4].position.z - 6);
+        
+        createLineVector(cylinderArray[4].position, cylinderArray[5].position, numEdges++, intermedNodesArray[4]);
+
+        createInterNodes(4, numEdges);
+        
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[5].position.x + 1.5, mapLevel, cylinderArray[5].position.z + 1.2);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[5].position.x + 2.7, mapLevel, cylinderArray[5].position.z + 1.5);
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[5].position.x + 4, mapLevel, cylinderArray[5].position.z + 1.3);
+        intermedNodesArray[numEdges][3].position.set(cylinderArray[5].position.x + 7, mapLevel, cylinderArray[5].position.z + 0.5);
+        
+        createLineVector(cylinderArray[5].position, cylinderArray[6].position, numEdges++, intermedNodesArray[5]);
+
+        createInterNodes(0, numEdges);
         
         createLineVector(cylinderArray[6].position, cylinderArray[7].position, numEdges++);
+
+        createInterNodes(1, numEdges);
         
-        createLineVector(cylinderArray[7].position, cylinderArray[8].position, numEdges++);
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[7].position.x + 1, mapLevel, cylinderArray[7].position.z + 1);
+        
+        createLineVector(cylinderArray[7].position, cylinderArray[8].position, numEdges++, intermedNodesArray[7]);
+
+        createInterNodes(0, numEdges);
         
         createLineVector(cylinderArray[8].position, cylinderArray[9].position, numEdges++);
+
+        createInterNodes(1, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[8].position.x + 2, mapLevel, cylinderArray[9].position.z + 1.5);
         
-        createLineVector(cylinderArray[9].position, cylinderArray[10].position, numEdges++);
+        createLineVector(cylinderArray[9].position, cylinderArray[10].position, numEdges++, intermedNodesArray[9]);
+
+         createInterNodes(2, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[10].position.x + 0.4, mapLevel, cylinderArray[10].position.z + 2);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[10].position.x - 0.3, mapLevel, cylinderArray[10].position.z + 4);
         
-        createLineVector(cylinderArray[10].position, cylinderArray[0].position, numEdges++);
+        createLineVector(cylinderArray[10].position, cylinderArray[0].position, numEdges++, intermedNodesArray[10]);
+
+        createInterNodes(8, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[11].position.x - 3, mapLevel, cylinderArray[8].position.z - 1.5);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[11].position.x + 0.5, mapLevel, cylinderArray[8].position.z - 1.8);
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[11].position.x + 2, mapLevel, cylinderArray[8].position.z - 2.5);
+        intermedNodesArray[numEdges][3].position.set(cylinderArray[11].position.x + 2.8, mapLevel, cylinderArray[8].position.z - 4);
+        intermedNodesArray[numEdges][4].position.set(cylinderArray[11].position.x + 2.4, mapLevel, cylinderArray[8].position.z - 5.5);
+        intermedNodesArray[numEdges][5].position.set(cylinderArray[11].position.x + 1.5, mapLevel, cylinderArray[8].position.z - 7);
+        intermedNodesArray[numEdges][6].position.set(cylinderArray[11].position.x + 0.5, mapLevel, cylinderArray[8].position.z - 8.8);
+
+        intermedNodesArray[numEdges][7].position.set(cylinderArray[7].position.x + 9, mapLevel, cylinderArray[7].position.z - 8);
         
-        createLineVector(cylinderArray[8].position, cylinderArray[11].position, numEdges++);
+        createLineVector(cylinderArray[8].position, cylinderArray[11].position, numEdges++, intermedNodesArray[11]);
+
+
+        createInterNodes(4, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[7].position.x + 3, mapLevel, cylinderArray[7].position.z - 4.8);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[7].position.x + 5.5, mapLevel, cylinderArray[7].position.z - 6.4);
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[7].position.x + 5.5, mapLevel, cylinderArray[7].position.z - 7.7);
+        intermedNodesArray[numEdges][3].position.set(cylinderArray[7].position.x + 9, mapLevel, cylinderArray[7].position.z - 8);
         
-        createLineVector(cylinderArray[7].position, cylinderArray[11].position, numEdges++);
+        createLineVector(cylinderArray[7].position, cylinderArray[11].position, numEdges++, intermedNodesArray[12]);
+
+        createInterNodes(4, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[6].position.x + 3.2, mapLevel, cylinderArray[6].position.z - 6.4);
+
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[6].position.x + 5.5, mapLevel, cylinderArray[6].position.z - 7.3);
+
+         intermedNodesArray[numEdges][2].position.set(cylinderArray[7].position.x + 5.5, mapLevel, cylinderArray[7].position.z - 7.7);
+        intermedNodesArray[numEdges][3].position.set(cylinderArray[7].position.x + 9, mapLevel, cylinderArray[7].position.z - 8);
         
-        createLineVector(cylinderArray[6].position, cylinderArray[11].position, numEdges++);
+        createLineVector(cylinderArray[6].position, cylinderArray[11].position, numEdges++, intermedNodesArray[13]);
+
+        createInterNodes(0, numEdges);
         
         createLineVector(cylinderArray[11].position, cylinderArray[12].position, numEdges++);
+
+        createInterNodes(0, numEdges);
         
         createLineVector(cylinderArray[12].position, cylinderArray[13].position, numEdges++);
+
+        createInterNodes(2, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[13].position.x + 5, mapLevel, cylinderArray[13].position.z);
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[13].position.x + 7, mapLevel, cylinderArray[13].position.z + 0.5);
         
-        createLineVector(cylinderArray[13].position, cylinderArray[5].position, numEdges++);
+        createLineVector(cylinderArray[13].position, cylinderArray[5].position, numEdges++, intermedNodesArray[16]);
+
+        createInterNodes(0, numEdges);
         
         createLineVector(cylinderArray[13].position, cylinderArray[14].position, numEdges++);
+
+        createInterNodes(0, numEdges);
         
         createLineVector(cylinderArray[14].position, cylinderArray[4].position, numEdges++);
         
-        createLineVector(cylinderArray[14].position, cylinderArray[15].position, numEdges++);
-        
-        createLineVector(cylinderArray[15].position, cylinderArray[3].position, numEdges++);
-        
-        createLineVector(cylinderArray[15].position, cylinderArray[16].position, numEdges++);
-        
-        createLineVector(cylinderArray[16].position, cylinderArray[2].position, numEdges++);
-        
-        createLineVector(cylinderArray[16].position, cylinderArray[17].position, numEdges++);
-        
-        createLineVector(cylinderArray[17].position, cylinderArray[18].position, numEdges++);
-        
-        createLineVector(cylinderArray[18].position, cylinderArray[19].position, numEdges++);
-        
-        createLineVector(cylinderArray[19].position, cylinderArray[20].position, numEdges++);
+        createInterNodes(0, numEdges);
 
-        createLineVector(cylinderArray[20].position, cylinderArray[21].position, numEdges++);
+        createLineVector(cylinderArray[14].position, cylinderArray[15].position, numEdges++);
+
+        createInterNodes(1, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[15].position.x + 2, mapLevel, cylinderArray[15].position.z - 1);
         
-        createLineVector(cylinderArray[21].position, cylinderArray[0].position, numEdges++);
+        createLineVector(cylinderArray[15].position, cylinderArray[3].position, numEdges++, intermedNodesArray[20]);
+
+        createInterNodes(1, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[15].position.x, mapLevel, cylinderArray[15].position.z + 5);
+        
+        createLineVector(cylinderArray[15].position, cylinderArray[16].position, numEdges++, intermedNodesArray[21]);
+
+        createInterNodes(2, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[16].position.x + 4, mapLevel, cylinderArray[16].position.z);
+
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[16].position.x + 5.9, mapLevel, cylinderArray[16].position.z - 1.5);
+        
+        createLineVector(cylinderArray[16].position, cylinderArray[2].position, numEdges++, intermedNodesArray[22]);
+
+        createInterNodes(3, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[16].position.x - 0.8, mapLevel, cylinderArray[16].position.z + 2.5);
+
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[16].position.x - 1.2, mapLevel, cylinderArray[16].position.z + 5);
+
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[16].position.x - 1, mapLevel, cylinderArray[16].position.z + 8);
+        
+        createLineVector(cylinderArray[16].position, cylinderArray[17].position, numEdges++, intermedNodesArray[23]);
+
+        createInterNodes(4, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[17].position.x + 6, mapLevel, cylinderArray[17].position.z - 1.3);
+
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[17].position.x + 8, mapLevel, cylinderArray[17].position.z - 2.1);
+
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[17].position.x + 10, mapLevel, cylinderArray[17].position.z - 3.2);
+
+        intermedNodesArray[numEdges][3].position.set(cylinderArray[17].position.x + 13, mapLevel, cylinderArray[17].position.z - 2.8);
+        
+        createLineVector(cylinderArray[17].position, cylinderArray[18].position, numEdges++, intermedNodesArray[24]);
+
+        createInterNodes(2, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[18].position.x + 3.5, mapLevel, cylinderArray[17].position.z + 0.1);
+
+        intermedNodesArray[numEdges][1].position.set(cylinderArray[18].position.x + 6.5, mapLevel, cylinderArray[17].position.z - 0.8);
+        
+        createLineVector(cylinderArray[18].position, cylinderArray[19].position, numEdges++, intermedNodesArray[25]);
+
+        createInterNodes(1, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[19].position.x - 0.5, mapLevel, cylinderArray[19].position.z - 4);
+        
+        createLineVector(cylinderArray[19].position, cylinderArray[20].position, numEdges++, intermedNodesArray[26]);
+
+        createInterNodes(1, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[20].position.x - 0.9, mapLevel, cylinderArray[20].position.z - 2.4);
+
+        createLineVector(cylinderArray[20].position, cylinderArray[21].position, numEdges++, intermedNodesArray[27]);
+
+        createInterNodes(1, numEdges);
+
+        intermedNodesArray[numEdges][0].position.set(cylinderArray[21].position.x - 0.5, mapLevel, cylinderArray[21].position.z - 3);
+        
+        createLineVector(cylinderArray[21].position, cylinderArray[0].position, numEdges++, intermedNodesArray[28]);
         
 
         plane.position.set(0, 74.6, 0);
@@ -211,6 +372,14 @@
           floorplane.rotation.y = Math.PI;
           floorplane.position.set(5, -1, 0);
           scene.add(floorplane);
+
+
+        function colorChange(index, color) {
+          lineArray[index].material.color = new THREE.Color(color);
+          lineArray[index].material.needsUpdate = true;
+          render();
+        };
+    
 
         render();
 
@@ -221,6 +390,8 @@
           camera.updateProjectionMatrix();
           render();
         };
+
+        colorChange(0, 0xff0000);
 
         window.addEventListener("resize",resize, false)
       }
