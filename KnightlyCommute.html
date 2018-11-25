@@ -300,7 +300,7 @@
 
         intermedNodesArray[numEdges][1].position.set(cylinderArray[6].position.x + 5.5, mapLevel, cylinderArray[6].position.z - 7.3);
 
-         intermedNodesArray[numEdges][2].position.set(cylinderArray[7].position.x + 5.5, mapLevel, cylinderArray[7].position.z - 7.7);
+        intermedNodesArray[numEdges][2].position.set(cylinderArray[7].position.x + 5.5, mapLevel, cylinderArray[7].position.z - 7.7);
         intermedNodesArray[numEdges][3].position.set(cylinderArray[7].position.x + 9, mapLevel, cylinderArray[7].position.z - 8);
         
         createLineVector(cylinderArray[6].position, cylinderArray[11].position, numEdges++, intermedNodesArray[13]);
@@ -400,7 +400,54 @@
         
         createLineVector(cylinderArray[21].position, cylinderArray[0].position, numEdges++, intermedNodesArray[28]);
         
-
+		//Nestor's code
+		function Edge(length, lines) {
+			this.length = length;
+			this.lines = lines;
+		}
+		
+		var _ = Infinity;
+		
+		var adjacencies = [
+		//  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
+          [ _, 0, _, _, _, _, _, _, _, _,10, _, _, _, _, _, _, _, _, _, _,28 ],//0
+          [ 0, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ],//1
+		  [ _, 1, _, 2, _, _, _, _, _, _, _, _, _, _, _, _,22, _, _, _, _, _ ],//2
+		  [ _, _, 2, _, 3, _, _, _, _, _, _, _, _, _, _,20, _, _, _, _, _, _ ],//3
+		  [ _, _, _, 3, _, 4, _, _, _, _, _, _, _, _,18, _, _, _, _, _, _, _ ],//4
+		  [ _, _, _, _, 4, _, 5, _, _, _, _, _, _,16, _, _, _, _, _, _, _, _ ],//5
+		  [ _, _, _, _, _, 5, _, 6, _, _, _,13, _, _, _, _, _, _, _, _, _, _ ],//6
+		  [ _, _, _, _, _, _, 6, _, 7, _, _,12, _, _, _, _, _, _, _, _, _, _ ],//7
+		  [ _, _, _, _, _, _, _, 7, _, 8, _,11, _, _, _, _, _, _, _, _, _, _ ],//8
+		  [ _, _, _, _, _, _, _, _, 8, _, 9, _, _, _, _, _, _, _, _, _, _, _ ],//9
+		  [10, _, _, _, _, _, _, _, _, 9, _, _, _, _, _, _, _, _, _, _, _, _ ],//10
+		  [ _, _, _, _, _, _,13,12,11, _, _, _,14, _, _, _, _, _, _, _, _, _ ],//11
+		  [ _, _, _, _, _, _, _, _, _, _, _,14, _,15, _, _, _, _, _, _, _, _ ],//12
+		  [ _, _, _, _, _,16, _, _, _, _, _, _,15, _,17, _, _, _, _, _, _, _ ],//13
+		  [ _, _, _, _,18, _, _, _, _, _, _, _, _,17, _,19, _, _, _, _, _, _ ],//14
+		  [ _, _, _,20, _, _, _, _, _, _, _, _, _, _,19, _,21, _, _, _, _, _ ],//15
+		  [ _, _,22, _, _, _, _, _, _, _, _, _, _, _, _,21, _,23, _, _, _, _ ],//16
+		  [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,23, _,24, _, _, _ ],//17
+		  [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,24, _,25, _, _ ],//18
+		  [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,25, _,26, _ ],//19
+		  [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,26, _,27 ],//20
+		  [28, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,27, _ ] //21
+        ];
+		
+		var edgeMatrix = [...Array(adjacencies.length)].map(e => Array(adjacencies.length));
+		
+		
+		for(i = 0; i < adjacencies.length; i++){
+			for(j = 0; j < adjacencies[0].length; j++){
+				if (adjacencies[i][j] != Infinity){
+					edgeMatrix[i][j] = new Edge(cylinderArray[i].position.distanceTo(cylinderArray[j].position), lineGeometryArray[adjacencies[i][j]]);
+					edgeMatrix[j][i] = edgeMatrix[i][j];
+				}
+			}
+		}
+		
+		
+		
         plane.position.set(0, 74.6, 0);
           floorplane.rotation.x = Math.PI / 2;
           floorplane.rotation.z = Math.PI;
@@ -428,7 +475,7 @@
 
         //console.log(lineMathArray[0][0].distance());
 
-        colorChange(0, 0xff0000);
+        //colorChange(0, 0xff0000);
 
         window.addEventListener("resize",resize, false)
       }
