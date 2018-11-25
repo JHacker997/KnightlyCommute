@@ -118,25 +118,60 @@
 
         let linematerial;
 
-        let lineArray = [];
+        let lineGeometryArray = new Array();
+        let lineMathArray = new Array();
 
         function createLineVector(v1, v2, index, addPoints) {
            linematerial = new THREE.LineBasicMaterial({color: 0x0000ff});
 
+           let numLines = 0;
+
           let liner = new THREE.Geometry();
+
+          lineGeometryArray[index] = new Array();
+          lineMathArray[index] = new Array();
           if(addPoints != null)
           {
+            let point1 = new THREE.Vector3(v1.x, 74.8, v1.z);
             liner.vertices.push(
-              new THREE.Vector3(v1.x, 74.8, v1.z)
+              point1
             );
-            addPoints.forEach(function(point){
+            
+            let pointsLine = 1;
+            let numPoints = addPoints.length;
+            for(let i = 0; i < numPoints; i++)
+            {
+              let point2 = new THREE.Vector3(addPoints[i].position.x, 74.8, addPoints[i].position.z);
               liner.vertices.push(
-              new THREE.Vector3(point.position.x, 74.8, point.position.z)
+                point2
               );
-            });
+              pointsLine++;
+              if(pointsLine == 2)
+              {
+                lineMathArray[index].push(new THREE.Line3(point1, point2));
+                lineGeometryArray[index].push(new THREE.Line(liner, linematerial ));
+                scene.add(lineGeometryArray[index][numLines++]);
+                point1 = new THREE.Vector3(addPoints[i].position.x, 74.8, addPoints[i].position.z);
+                liner.vertices.push(
+                  point1
+                );
+                pointsLine = 1;
+              }
+            }
+            point2 =  new THREE.Vector3(v2.x, 74.8, v2.z);
             liner.vertices.push(
-              new THREE.Vector3(v2.x, 74.8, v2.z)
+              point2
             );
+            pointsLine++;
+
+            if(pointsLine == 2)
+              {
+                lineMathArray[index].push(new THREE.Line3(point1, point2));
+                lineGeometryArray[index].push(new THREE.Line(liner, linematerial ));
+                scene.add(lineGeometryArray[index][numLines++]);
+                pointsLine = 1;
+              }
+
           }
           else
           {
@@ -144,11 +179,10 @@
               new THREE.Vector3(v1.x, 74.8, v1.z),
               new THREE.Vector3(v2.x, 74.8, v2.z)
             );
+            lineGeometryArray[index].push(new THREE.Line(liner, linematerial ));
+          scene.add(lineGeometryArray[index][numLines]);
           } 
           
-
-          lineArray.push(new THREE.Line(liner, linematerial ));
-          scene.add(lineArray[index]);
         }
         
         let numEdges = 0;
@@ -373,25 +407,17 @@
           floorplane.rotation.y = Math.PI;
           floorplane.position.set(5, -1, 0);
           scene.add(floorplane);
-
-
-        function colorChange(index, color) {
-          lineArray[index].material.color = new THREE.Color(color);
-          lineArray[index].material.needsUpdate = true;
-          render();
-        };
     
 
         render();
 		
-		function colorChange(index, color) {
-			lineArray[index].material.color = new THREE.Color(color);
-			lineArray[index].material.needsUpdate = true;
-			render();
+		function colorChange(index, color, numLines) {
+			lineGeometryArray[index].forEach(function(line){
+        line.material.color = new THREE.Color(color);
+			 line.material.needsUpdate = true;
+			render();});
 		};
 		
-		
-
         let resize = function ()
         {
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -399,8 +425,8 @@
           camera.updateProjectionMatrix();
           render();
         };
-		
-		colorChange(0, 0xff0000);
+
+        //console.log(lineMathArray[0][0].distance());
 
         colorChange(0, 0xff0000);
 
