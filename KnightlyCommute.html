@@ -480,7 +480,7 @@
             // Light up pathLengths[i]
             console.log("Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[i]);
             await sleep(1000);
-            
+            colorChange(adj[startVertex][i], 0x0000ff);
 
 
             predecessors[i] = startVertex;
