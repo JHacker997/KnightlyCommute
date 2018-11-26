@@ -52,6 +52,7 @@ function mainFunction() {
 
   let cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
   cameraControls.addEventListener( "change", render, false );
+  cameraControls.target.y = mapLevel;
 
   let mtlLoader = new THREE.MTLLoader();
 
@@ -485,7 +486,7 @@ function mainFunction() {
         console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
         await sleep( 1000 );
         colorChange(adj[startVertex][i], 0x0000ff);
-        
+
         predecessors[ i ] = startVertex;
       }
     }
@@ -558,7 +559,7 @@ function mainFunction() {
             // unlight edges[closest][j] and pathlength[j]
             pathLengths[ j ] = possiblyCloserDistance;
             predecessors[ j ] = closest;
-          } 
+          }
 		  if ( edges[ closest ][ j ].length != Infinity ){
 			colorChange( adj[ closest ][ j ], 0x0000ff );
 		  }
