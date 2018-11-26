@@ -441,11 +441,167 @@
 			for(j = 0; j < adjacencies[0].length; j++){
 				if (adjacencies[i][j] != Infinity){
 					edgeMatrix[i][j] = new Edge(cylinderArray[i].position.distanceTo(cylinderArray[j].position), lineGeometryArray[adjacencies[i][j]]);
-					edgeMatrix[j][i] = edgeMatrix[i][j];
+					//edgeMatrix[j][i] = edgeMatrix[i][j];
 				}
+				else 
+					edgeMatrix[i][j] = new Edge(Infinity, new Array());
 			}
 		}
 		
+		function colorChange(index, color) {
+			lineGeometryArray[index].forEach(function(line){
+			line.material.color = new THREE.Color(color);
+			line.material.needsUpdate = true;
+			render();});
+		};
+		
+		
+	function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function shortestPath(edges, numVertices, startVertex, endVertex, adj) {
+
+    var done = new Array(numVertices);
+      done[startVertex] = true;
+      var pathLengths = new Array(numVertices);
+      var predecessors = new Array(numVertices);
+
+
+      for (var i = 0; i < numVertices; i++) {
+        // If there is an edge between the starting vertex and this vertex, set the shortest path equal to that path length
+        pathLengths[i] = edges[startVertex][i].length;
+
+        // If we do, set the parent of the end node to the start node
+        if (edges[startVertex][i].length != Infinity) {
+
+            // Pause here and light up edges[startVertex][i]
+			colorChange(adj[startVertex][i], 0xff0000);
+            // Light up pathLengths[i]
+            console.log("Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[i]);
+            await sleep(1000);
+            
+
+
+            predecessors[i] = startVertex;
+        }
+      }
+
+      // The distance from the start node to itself is always 0
+    pathLengths[startVertex] = 0;
+
+
+      for (var i = 0; i < numVertices - 1; i++) {
+        var closest = -1;
+        var closestDistance = Infinity;
+        for (var j = 0; j < numVertices; j++) {
+          // If we haven't yet looked at this node and the path length currently
+          // stored is smaller than the closestDistance
+            if (!done[j] && pathLengths[j] < closestDistance) {
+
+              // The new closest distance is the current path length
+              closestDistance = pathLengths[j];
+
+              // j is the closest node
+              closest = j;
+            }
+        }
+
+        // PAUSE: light up edges[predecessor[closest]][closest]
+          // temp = closest
+          // while (temp != startVertex)
+          //    light up temp[predecessor[temp]][temp]
+          //    temp = predecessor[temp]
+
+          var temp = closest;
+          while (temp != startVertex){
+              console.log("Light up [" + predecessors[temp] + "][" + temp + "]");
+			  colorChange(adj[predecessors[temp]][temp], 0xff0000);
+              temp = predecessors[temp];
+          }
+
+          await sleep(3000);
+
+        // we've looked at the closest node
+        done[closest] = true;
+
+
+        for (var j = 0; j < numVertices; j++) {
+
+          // If we haven't looked at this node yet
+            if (!done[j]) {
+
+              // Take the current closest path length and add the edge between the
+              // closest node and this one
+              var possiblyCloserDistance = pathLengths[closest] + edges[closest][j].length;
+
+              // PAUSE: light up edges[closest][j]
+              if (edges[closest][j].length != Infinity){
+				colorChange(adj[closest][j], 0xff0000);
+                console.log("Currently inspecting edge between [" + closest + "] and [" + j + "]");
+                await sleep(1000);
+              }
+
+              // If this distance is shorter than the current stored path length
+              if (possiblyCloserDistance < pathLengths[j]) {
+
+                // Replace the path length with the shorter one and set the parent of this node to the closest node
+
+                // PAUSE: light up pathlength[j]
+                console.log("Changing shortest pathlength of " + j + " from " +pathLengths[j] + " to " + possiblyCloserDistance);
+
+                await sleep(1000);
+
+                // unlight edges[closest][j] and pathlength[j]
+				  colorChange(adj[closest][j], 0x0000ff);
+                  pathLengths[j] = possiblyCloserDistance;
+                  predecessors[j] = closest;
+              }
+            }
+        }
+
+        // POTENTIAL PAUSE: light up red pathlengths[closest] to mark it done
+
+          temp = closest;
+          while (temp != startVertex){
+          //    UNlight up temp[predecessor[temp]][temp]
+			 console.log(adj[predecessors[temp]][temp]);
+			 colorChange(adj[predecessors[temp]][temp], 0x0000ff);
+             temp = predecessors[temp];
+		  }
+		  
+      }
+
+      constructPath({ "startVertex": startVertex,
+               "pathLengths": pathLengths,
+               "predecessors": predecessors }, endVertex);
+
+      return { "startVertex": startVertex,
+               "pathLengths": pathLengths,
+               "predecessors": predecessors };
+  }
+
+  function constructPath(shortestPathInfo, endVertex) {
+    // Empty array to store our path from start to end node
+      var path = [];
+
+      // We must work backwards from the end node and through the parents of the nodes
+      // to construct the path
+      while (endVertex != shortestPathInfo.startVertex) {
+        // Unshift just adds the element to the beginning of the array
+        path.unshift(endVertex);
+
+        // Light up edges[predecessors[endVertex][endVertex]
+
+
+        // Once we've added the current node, we move on to the parent node
+        endVertex = shortestPathInfo.predecessors[endVertex];
+      }
+
+      console.log(path);
+
+      return path;
+  }
 		
 		
         plane.position.set(0, 74.6, 0);
@@ -458,13 +614,6 @@
 
         render();
 		
-		function colorChange(index, color, numLines) {
-			lineGeometryArray[index].forEach(function(line){
-        line.material.color = new THREE.Color(color);
-			 line.material.needsUpdate = true;
-			render();});
-		};
-		
         let resize = function ()
         {
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -476,9 +625,17 @@
         //console.log(lineMathArray[0][0].distance());
 
         //colorChange(0, 0xff0000);
+		
+		var shortestPathInfo = shortestPath(edgeMatrix, 22, 0, 10, adjacencies);
+
+        console.log(shortestPathInfo);
 
         window.addEventListener("resize",resize, false)
       }
+	  
+	  
+	  
+	
     </script>
   </head>
   <body onload="mainFunction();">
