@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>Knightly Commute</title>
-    <script src="https://threejs.org/build/three.js"></script>
-    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-    <script src='https://threejs.org/examples/js/libs/dat.gui.min.js'></script>
+    <script src= "https://threejs.org/build/three.js"> </script>
+    <script src= "https://threejs.org/examples/js/controls/OrbitControls.js"> </script>
+    <script src= "https://threejs.org/examples/js/libs/dat.gui.min.js"> </script>
     <script src= "https://threejs.org/examples/js/loaders/OBJLoader.js"> </script>
     <script src= "https://threejs.org/examples/js/loaders/MTLLoader.js"> </script>
+
 
 
 <script>
@@ -101,6 +103,60 @@ function mainFunction() {
     cylinderArray.push( new THREE.Mesh( cylinderGeometry, nodeMaterial ) );
     scene.add( cylinderArray[ i ] );
   }
+
+  /*
+   * Show text on map.
+   * Params: LoadFont('text', xPosition, zPosition, scaleMultiplier)
+   */
+  var cubeMat = new THREE.MeshLambertMaterial({color: 0xff3300})
+  var text = "aems",
+        height = 0,
+        size = 10,
+        curveSegments = 10,
+        bevelThickness = 1,
+        bevelSize = 0.3,
+        bevelSegments = 3,
+        bevelEnabled = true,
+        font = undefined;
+
+  function loadFont(word, x, z, s) {
+    var loader = new THREE.FontLoader();
+    loader.load('helvetiker_regular.typeface.js', function (res) {
+      font = res;
+      createText(word, x, z, s);
+    });
+  }
+
+  function createText(word, x, z, s) {
+    textGeo = new THREE.TextGeometry( word, {
+      font: font,
+      size: size,
+      height: height,
+      curveSegments:curveSegments,
+      weight: "normal",
+      bevelThickness:bevelThickness,
+      bevelSize:bevelSize,
+      bevelSegments:bevelSegments,
+      bevelEnabled:bevelEnabled
+    });
+    textGeo.computeBoundingBox();
+    textGeo.computeVertexNormals();
+
+    var text = new THREE.Mesh(textGeo, cubeMat)
+    text.rotation.x = Math.PI / 2;
+    text.rotation.y = Math.PI;
+    text.rotation.z = Math.PI;
+    text.position.x = -textGeo.boundingBox.max.x/2 + x;
+    text.position.y = mapLevel;
+    text.position.z = z;
+    let scale = .25 * s;
+    text.scale.x = scale;
+    text.scale.y = scale;
+    text.castShadow = true;
+    scene.add(text);
+  }
+
+  loadFont('5', 0, 0, 1);
 
   cylinderArray[ 0 ].position.set( 1.7 * multSize, mapLevel, -0.42 * multSize );
   cylinderArray[ 1 ].position.set( -0.48 * multSize, mapLevel, 1.3 * multSize );

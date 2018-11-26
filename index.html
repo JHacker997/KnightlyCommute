@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>3js</title>
+  </head>
+  <body>
+
+    <script src="three.min.js"></script>
+    <script>
+
+      /*
+      HELPERS
+      ~~~~~~~~~~~~~~~~~~~*/
+
+      //SETTINGS
+      var text = "aems",
+            height = 2,
+            size = 10,
+            curveSegments = 10,
+            bevelThickness = 1,
+            bevelSize = 0.3,
+            bevelSegments = 3,
+            bevelEnabled = true,
+            font = undefined
+
+
+
+      function loadFont(word) {
+        var loader = new THREE.FontLoader();
+        loader.load('helvetiker_regular.typeface.js', function (res) {
+          font = res;
+          createText(word);
+        });
+      }
+
+      function createText(word) {
+        textGeo = new THREE.TextGeometry( word, {
+          font: font,
+          size: size,
+          height: height,
+          curveSegments:curveSegments,
+          weight: "normal",
+          bevelThickness:bevelThickness,
+          bevelSize:bevelSize,
+          bevelSegments:bevelSegments,
+          bevelEnabled:bevelEnabled
+        });
+        textGeo.computeBoundingBox();
+        textGeo.computeVertexNormals();
+
+        var text = new THREE.Mesh(textGeo, cubeMat)
+        text.position.x = -textGeo.boundingBox.max.x/2;
+        text.castShadow = true;
+        scene.add(text);
+      }
+
+    </script>
+  </body>
+</html>
