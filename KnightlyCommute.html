@@ -200,7 +200,7 @@ function mainFunction() {
     intermedNodesArray[ indexTier ] = new Array();
     for ( let i = 0; i < numPerTier[ indexTier ]; i++ ) {
       intermedNodesArray[ indexTier ].push( new THREE.Mesh( cylinderGeometry, intermedMaterial ) );
-      scene.add( intermedNodesArray[ indexTier ][ i ] );
+      //scene.add( intermedNodesArray[ indexTier ][ i ] );
     }
   }
   createInterNodes( 2, numEdges );
