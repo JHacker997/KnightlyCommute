@@ -712,7 +712,6 @@ function mainFunction() {
       var temp = closest;
       while ( temp != startVertex )
       {
-      {
         //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
         colorChange( adj[ predecessors[ temp ] ][ temp ], 0xff0000 );
         temp = predecessors[ temp ];
