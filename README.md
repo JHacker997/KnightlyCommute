@@ -1,4 +1,5 @@
 Computer Graphics group project at the University of Central Florida.
+By: N. Montejo, J. Berger, S. Basco, and J. Hacker
 
 This project is a visual representation of Shortest path calculation using Dijkstra's algorithm. 
 The algorithm works on a map representing UCF and the nearby surrounding areas and calculates the shortest path from any given intersection on the map to another. 
