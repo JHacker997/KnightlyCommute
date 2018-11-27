@@ -585,6 +585,11 @@ function mainFunction() {
       // we've looked at the closest node
       done[ closest ] = true;
 
+      if ( closest == endVertex){
+			console.log("We found the end vertex!");
+            break;
+      }	
+
 
       for ( var j = 0; j < numVertices; j++ ) {
 
@@ -600,6 +605,8 @@ function mainFunction() {
             colorChange( adj[ closest ][ j ], 0xff0000 );
             console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
             await sleep( 1000 / speed );
+
+
           }
 
           // If this distance is shorter than the current stored path length
@@ -618,6 +625,7 @@ function mainFunction() {
           }
 		  if ( edges[ closest ][ j ].length != Infinity ){
 			colorChange( adj[ closest ][ j ], 0x0000ff );
+			console.log("Current j: " + j + " and Current endVertex = " + endVertex);
 		  }
         }
       }
@@ -639,6 +647,7 @@ function mainFunction() {
       "pathLengths": pathLengths,
       "predecessors": predecessors
     }, endVertex );
+
 
     isRunning = false;
 
@@ -708,15 +717,32 @@ function mainFunction() {
   gui.add(values, 'speed', 0.5, 5, 0.1).name( "Speed" );
 
   var button = { Start:function(){ 
-  	console.log("clicked") 
+  	console.log("start clicked") 
   	if (!isRunning){
   		isRunning = true;
   		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies, values.speed );	
-  	}
+    }
   	
   }};
   gui.add(button,'Start');
 
+
+  var button2 = { Clear:function(){ 
+  	console.log("clear clicked") 
+  	if (!isRunning){
+
+  		for (var i = 0; i < 22; i++) {
+  			for (var j = 0; j < 22; j++){
+  				if (adjacencies[ i][ j ] != Infinity) {
+  					colorChange( adjacencies[ i][ j ], 0x0000ff );
+  				}
+  			}
+  		}
+	
+    }
+  	
+  }};
+  gui.add(button2,'Clear');
 
   //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
 
