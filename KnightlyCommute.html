@@ -117,7 +117,6 @@ function mainFunction() {
     loader.load('Montserrat_Regular.js', function (res) {
       font = res;
       createText(word, x, z, s, i);
-	  render();
     });
   }
 
@@ -149,6 +148,10 @@ function mainFunction() {
     text.scale.y = scale;
     text.scale.z = .25;
     text.castShadow = true;
+	if (i == 6)
+    {
+      text.position.z -= zOff + .75;
+    }
     if (texts[i] != null)
     {
       scene.remove(texts[i]);
@@ -162,7 +165,7 @@ function mainFunction() {
   //hex value for ncolor
   function changeTColor(index, ncolor)
   {
-	console.log(texts[index]);
+	//console.log(texts[index]);
     texts[index].material = new THREE.MeshLambertMaterial({color: ncolor})
 	render();
   }
@@ -281,12 +284,6 @@ function mainFunction() {
   textArray.push(new Text('V ∞', 3.17 * multSize, 2.62 * multSize, 1, 21));
   loadFont(textArray[21].text, textArray[21].x, textArray[21].z, textArray[21].scale, textArray[21].index);
 
-  for(var i = 0 ; i<texts.length;i++){
-	console.log(texts[i]);
-  }
-  console.log("hmmmm");
-
-  //changeTColor(0, 0x000fff);
 
   let linematerial;
 
@@ -634,7 +631,7 @@ function mainFunction() {
    */
 
   function updatePathLength(index, pathLength){
-	var letter = String.fromCharCode("A".charCodeAt(0) + index);
+	var letter = String.fromCharCode(0 + + "A".charCodeAt(0) + + index);
 	if (pathLength !=Infinity){
 		loadFont(letter + " " + pathLength, textArray[index].x, textArray[index].z, textArray[index].scale, index);
 	}
@@ -652,13 +649,9 @@ function mainFunction() {
     var predecessors = new Array( numVertices );
 
 
-	for(var i = 0 ; i<texts.length;i++){
-		console.log(texts[i]);
-	}
-	console.log("kekekek");
-
 	// The distance from the start node to itself is always 0
     pathLengths[ startVertex ] = 0;
+	//console.log(startVertex);
 	updatePathLength(startVertex, parseInt(pathLengths[startVertex]));
 	changeTColor(startVertex, 0x000fff);
 	await sleep( 1000 / speed );
@@ -672,7 +665,6 @@ function mainFunction() {
       // If we do, set the parent of the end node to the start node
       if ( edges[ startVertex ][ i ].length != Infinity )
       {
-		console.log(texts[i]);
         // Pause here and light up edges[startVertex][i]
         colorChange( adj[ startVertex ][ i ], 0xff0000 );
         // Light up pathLengths[i]
@@ -683,7 +675,7 @@ function mainFunction() {
 		changeTColor(i, 0x000000);
 
 
-        console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
+        //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
         await sleep( 1000 / speed );
         colorChange(adj[startVertex][i], 0x0000ff);
 
@@ -721,7 +713,7 @@ function mainFunction() {
       var temp = closest;
       while ( temp != startVertex )
       {
-        console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
+        //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
         colorChange( adj[ predecessors[ temp ] ][ temp ], 0xff0000 );
         temp = predecessors[ temp ];
       }
@@ -733,7 +725,7 @@ function mainFunction() {
 
       if ( closest == endVertex)
       {
-			console.log("We found the end vertex!");
+			//console.log("We found the end vertex!");
             break;
       }
 
@@ -753,7 +745,7 @@ function mainFunction() {
           if ( edges[ closest ][ j ].length != Infinity )
           {
             colorChange( adj[ closest ][ j ], 0xff0000 );
-            console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
+            //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
             await sleep( 1000 / speed );
 
 
@@ -766,7 +758,7 @@ function mainFunction() {
             // Replace the path length with the shorter one and set the parent of this node to the closest node
 
             // PAUSE: light up pathlength[j]
-            console.log( "Changing shortest pathlength of " + j + " from " + pathLengths[ j ] + " to " + possiblyCloserDistance );
+            //console.log( "Changing shortest pathlength of " + j + " from " + pathLengths[ j ] + " to " + possiblyCloserDistance );
 
             // unlight edges[closest][j] and pathlength[j]
             pathLengths[ j ] = possiblyCloserDistance;
@@ -780,7 +772,7 @@ function mainFunction() {
     		  if ( edges[ closest ][ j ].length != Infinity )
           {
     			colorChange( adj[ closest ][ j ], 0x0000ff );
-    			console.log("Current j: " + j + " and Current endVertex = " + endVertex);
+    			//console.log("Current j: " + j + " and Current endVertex = " + endVertex);
     		  }
         }
       }
@@ -790,7 +782,7 @@ function mainFunction() {
       temp = closest;
       while ( temp != startVertex ) {
         //    UNlight up temp[predecessor[temp]][temp]
-        console.log( adj[ predecessors[ temp ] ][ temp ] );
+        //console.log( adj[ predecessors[ temp ] ][ temp ] );
         colorChange( adj[ predecessors[ temp ] ][ temp ], 0x0000ff );
         temp = predecessors[ temp ];
       }
@@ -830,7 +822,7 @@ function mainFunction() {
       endVertex = shortestPathInfo.predecessors[ endVertex ];
     }
 
-    console.log( path );
+    //console.log( path );
 
     return path;
   }
@@ -872,7 +864,7 @@ function mainFunction() {
   gui.add(values, 'speed', 0.5, 5, 0.1).name( "Speed" );
 
   var button = { Start:function(){
-  	console.log("start clicked")
+  	//console.log("start clicked")
   	if (!isRunning){
   		isRunning = true;
   		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies, values.speed );
@@ -883,7 +875,7 @@ function mainFunction() {
 
 
   var button2 = { Clear:function(){
-  	console.log("clear clicked")
+  	//console.log("clear clicked")
   	if (!isRunning){
 
   		for (var i = 0; i < 22; i++) {
@@ -902,7 +894,7 @@ function mainFunction() {
 
   //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
 
-  console.log( shortestPathInfo );
+  //console.log( shortestPathInfo );
 
   window.addEventListener( "resize", resize, false )
 }
