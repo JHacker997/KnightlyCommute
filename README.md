@@ -1,4 +1,4 @@
-Computer Graphics group project at the University of Central Florida.
+Computer Graphics group project at the University of Central Florida.<br />
 By: N. Montejo, J. Berger, S. Basco, and J. Hacker
 
 This project is a visual representation of Shortest path calculation using Dijkstra's algorithm. 
