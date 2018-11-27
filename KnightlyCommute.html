@@ -651,6 +651,13 @@ function mainFunction() {
 	}
 	console.log("kekekek");
 
+	// The distance from the start node to itself is always 0
+    pathLengths[ startVertex ] = 0;
+	updatePathLength(startVertex, parseInt(pathLengths[startVertex]));
+	changeTColor(startVertex, 0x000fff);
+	await sleep( 1000 / speed );
+	changeTColor(startVertex, 0x000000);
+	
     for ( var i = 0; i < numVertices; i++ )
     {
       // If there is an edge between the starting vertex and this vertex, set the shortest path equal to that path length
@@ -681,8 +688,7 @@ function mainFunction() {
       }
     }
 
-    // The distance from the start node to itself is always 0
-    pathLengths[ startVertex ] = 0;
+    
 
 
     for ( var i = 0; i < numVertices - 1; i++ )
@@ -756,11 +762,14 @@ function mainFunction() {
             // PAUSE: light up pathlength[j]
             console.log( "Changing shortest pathlength of " + j + " from " + pathLengths[ j ] + " to " + possiblyCloserDistance );
 
-            await sleep( 1000 / speed );
-
             // unlight edges[closest][j] and pathlength[j]
             pathLengths[ j ] = possiblyCloserDistance;
             predecessors[ j ] = closest;
+			
+			updatePathLength(j, parseInt(pathLengths[j]));
+			changeTColor(j, 0x000fff);
+			await sleep( 1000 / speed );
+			changeTColor(j, 0x000000);
           }
     		  if ( edges[ closest ][ j ].length != Infinity )
           {
