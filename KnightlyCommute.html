@@ -564,7 +564,6 @@ function mainFunction() {
 
   createLineVector( cylinderArray[ 21 ].position, cylinderArray[ 0 ].position, numEdges++, intermedNodesArray[ 28 ] );
 
-  //Nestor's code
   function Edge( length, lines ) {
     this.length = length;
     this.lines = lines;
@@ -712,6 +711,7 @@ function mainFunction() {
       // PAUSE: light up edges[predecessor[closest]][closest]
       var temp = closest;
       while ( temp != startVertex )
+      {
       {
         //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
         colorChange( adj[ predecessors[ temp ] ][ temp ], 0xff0000 );
