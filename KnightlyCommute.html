@@ -640,6 +640,8 @@ function mainFunction() {
       "predecessors": predecessors
     }, endVertex );
 
+    isRunning = false;
+
     return {
       "startVertex": startVertex,
       "pathLengths": pathLengths,
@@ -690,8 +692,31 @@ function mainFunction() {
   //console.log(lineMathArray[0][0].distance());
 
   //colorChange(0, 0xff0000);
+  var shortestPathInfo;
 
-  var shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
+  var values = {startingNode: 0, endingNode: 10};
+  var isRunning = false;
+  var gui = new dat.GUI();
+  gui.add(values, "startingNode", 
+	    [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"] )
+	    .name( "Starting Node" );
+
+  gui.add(values, "endingNode", 
+	    [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"] )
+	    .name( "Ending Node" );
+
+  var button = { Start:function(){ 
+  	console.log("clicked") 
+  	if (!isRunning){
+  		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies );
+  		isRunning = true;
+  	}
+  	
+  }};
+  gui.add(button,'Start');
+
+
+  //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
 
   console.log( shortestPathInfo );
 
