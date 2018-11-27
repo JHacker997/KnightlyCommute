@@ -521,7 +521,7 @@ function mainFunction() {
     return new Promise( resolve => setTimeout( resolve, ms ) );
   }
 
-  async function shortestPath( edges, numVertices, startVertex, endVertex, adj ) {
+  async function shortestPath( edges, numVertices, startVertex, endVertex, adj, speed ) {
 
     var done = new Array( numVertices );
     done[ startVertex ] = true;
@@ -540,7 +540,7 @@ function mainFunction() {
         colorChange( adj[ startVertex ][ i ], 0xff0000 );
         // Light up pathLengths[i]
         console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
-        await sleep( 1000 );
+        await sleep( 1000 / speed );
         colorChange(adj[startVertex][i], 0x0000ff);
 
         predecessors[ i ] = startVertex;
@@ -580,7 +580,7 @@ function mainFunction() {
         temp = predecessors[ temp ];
       }
 
-      await sleep( 3000 );
+      await sleep( 3000 / speed );
 
       // we've looked at the closest node
       done[ closest ] = true;
@@ -599,7 +599,7 @@ function mainFunction() {
           if ( edges[ closest ][ j ].length != Infinity ) {
             colorChange( adj[ closest ][ j ], 0xff0000 );
             console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
-            await sleep( 1000 );
+            await sleep( 1000 / speed );
           }
 
           // If this distance is shorter than the current stored path length
@@ -610,7 +610,7 @@ function mainFunction() {
             // PAUSE: light up pathlength[j]
             console.log( "Changing shortest pathlength of " + j + " from " + pathLengths[ j ] + " to " + possiblyCloserDistance );
 
-            await sleep( 1000 );
+            await sleep( 1000 / speed );
 
             // unlight edges[closest][j] and pathlength[j]
             pathLengths[ j ] = possiblyCloserDistance;
@@ -694,7 +694,7 @@ function mainFunction() {
   //colorChange(0, 0xff0000);
   var shortestPathInfo;
 
-  var values = {startingNode: 0, endingNode: 10};
+  var values = {startingNode: 0, endingNode: 10, speed: 1};
   var isRunning = false;
   var gui = new dat.GUI();
   gui.add(values, "startingNode", 
@@ -705,11 +705,13 @@ function mainFunction() {
 	    [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"] )
 	    .name( "Ending Node" );
 
+  gui.add(values, 'speed', 0.5, 5, 0.1).name( "Speed" );
+
   var button = { Start:function(){ 
   	console.log("clicked") 
   	if (!isRunning){
-  		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies );
   		isRunning = true;
+  		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies, values.speed );	
   	}
   	
   }};
