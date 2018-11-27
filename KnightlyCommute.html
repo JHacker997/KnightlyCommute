@@ -713,12 +713,13 @@ function mainFunction() {
       var temp = closest;
       while ( temp != startVertex )
       {
+      {
         //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
         colorChange( adj[ predecessors[ temp ] ][ temp ], 0xff0000 );
         temp = predecessors[ temp ];
       }
 
-      await sleep( 3000 / speed );
+      await sleep( 1000 / speed );
 
       // we've looked at the closest node
       done[ closest ] = true;
