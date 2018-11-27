@@ -99,7 +99,7 @@ function mainFunction() {
     texts[i] = null;
   }
 
-  
+
   let   height = 0,
         size = 10,
         curveSegments = 10,
@@ -108,8 +108,8 @@ function mainFunction() {
         bevelSegments = 3,
         bevelEnabled = true,
         font = undefined;
-		
-	
+
+
 
   function loadFont(word, x, z, s, i)
   {
@@ -156,7 +156,7 @@ function mainFunction() {
 	//console.log(texts[i]);
     scene.add(text);
   }
-  
+
 
   //hex value for ncolor
   function changeTColor(index, ncolor)
@@ -181,113 +181,112 @@ function mainFunction() {
     scene.add( cylinderArray[ i ] );
   }
 
+  let xOff = -1, zOff = 1.5;
   function Text(text, x, z, scale, index)
   {
     this.text = text;
-    this.x = x;
-    this.z = z;
+    this.x = x + xOff;
+    this.z = z + zOff;
     this.scale = scale;
     this.index = index;
   }
   let textArray = [];
 
-  let xOff = -1, zOff = 1.5;
-
   cylinderArray[ 0 ].position.set( 1.7 * multSize, mapLevel, -0.42 * multSize );
   textArray.push(new Text('A ∞', 1.7 * multSize, -0.42 * multSize, 1, 0));
-  loadFont(textArray[0].text, textArray[0].x + xOff, textArray[0].z + zOff, textArray[0].scale, textArray[0].index);
+  texts[0] = loadFont(textArray[0].text, textArray[0].x, textArray[0].z, textArray[0].scale, textArray[0].index);
 
   cylinderArray[ 1 ].position.set( -0.48 * multSize, mapLevel, 1.3 * multSize );
   textArray.push(new Text('B ∞', -0.48 * multSize, 1.3 * multSize, 1, 1));
-  loadFont(textArray[1].text, textArray[1].x + xOff, textArray[1].z + zOff, textArray[1].scale, textArray[1].index);
+  loadFont(textArray[1].text, textArray[1].x, textArray[1].z, textArray[1].scale, textArray[1].index);
 
   cylinderArray[ 2 ].position.set( -4.15 * multSize, mapLevel, 0.95 * multSize );
   textArray.push(new Text('C ∞', -4.15 * multSize, 0.95 * multSize, 1, 2));
-  loadFont(textArray[2].text, textArray[2].x + xOff, textArray[2].z + zOff, textArray[2].scale, textArray[2].index);
+  loadFont(textArray[2].text, textArray[2].x, textArray[2].z, textArray[2].scale, textArray[2].index);
 
   cylinderArray[ 3 ].position.set( -6.8 * multSize, mapLevel, -0.10 * multSize );
   textArray.push(new Text('D ∞', -6.8 * multSize, -0.10 * multSize, 1, 3));
-  loadFont(textArray[3].text, textArray[3].x + xOff, textArray[3].z + zOff, textArray[3].scale, textArray[3].index);
+  loadFont(textArray[3].text, textArray[3].x, textArray[3].z, textArray[3].scale, textArray[3].index);
 
   cylinderArray[ 4 ].position.set( -6.7 * multSize, mapLevel, -3.55 * multSize );
   textArray.push(new Text('E ∞', -6.7 * multSize, -3.55 * multSize, 1, 4));
-  loadFont(textArray[4].text, textArray[4].x + xOff, textArray[4].z + zOff, textArray[4].scale, textArray[4].index);
+  loadFont(textArray[4].text, textArray[4].x, textArray[4].z, textArray[4].scale, textArray[4].index);
 
   cylinderArray[ 5 ].position.set( -4.75 * multSize, mapLevel, -7.5 * multSize );
   textArray.push(new Text('F ∞', -4.75 * multSize, -7.5 * multSize, 1, 5));
-  loadFont(textArray[5].text, textArray[5].x + xOff, textArray[5].z + zOff, textArray[5].scale, textArray[5].index);
+  loadFont(textArray[5].text, textArray[5].x, textArray[5].z, textArray[5].scale, textArray[5].index);
 
   cylinderArray[ 6 ].position.set( 0.5 * multSize, mapLevel, -7.6 * multSize );
   textArray.push(new Text('G ∞', 0.5 * multSize, -7.6 * multSize, 1, 6));
-  loadFont(textArray[6].text, textArray[6].x + xOff, textArray[6].z + zOff, textArray[6].scale, textArray[6].index);
+  loadFont(textArray[6].text, textArray[6].x, textArray[6].z, textArray[6].scale, textArray[6].index);
 
   cylinderArray[ 7 ].position.set( 1.61 * multSize, mapLevel, -7.35 * multSize );
   textArray.push(new Text('H ∞', 1.61 * multSize, -7.35 * multSize, 1, 7));
-  loadFont(textArray[7].text, textArray[7].x + xOff, textArray[7].z + zOff, textArray[7].scale, textArray[7].index);
+  loadFont(textArray[7].text, textArray[7].x, textArray[7].z, textArray[7].scale, textArray[7].index);
 
   cylinderArray[ 8 ].position.set( 2.3 * multSize, mapLevel, -6.29 * multSize );
   textArray.push(new Text('I ∞', 2.3 * multSize, -6.29 * multSize, 1, 8));
-  loadFont(textArray[8].text, textArray[8].x + xOff, textArray[8].z + zOff, textArray[8].scale, textArray[8].index);
+  loadFont(textArray[8].text, textArray[8].x, textArray[8].z, textArray[8].scale, textArray[8].index);
 
   cylinderArray[ 9 ].position.set( 2.62 * multSize, mapLevel, -5.22 * multSize );
   textArray.push(new Text('J ∞', 2.62 * multSize, -5.22 * multSize, 1, 9));
-  loadFont(textArray[9].text, textArray[9].x + xOff, textArray[9].z + zOff, textArray[9].scale, textArray[9].index);
+  loadFont(textArray[9].text, textArray[9].x, textArray[9].z, textArray[9].scale, textArray[9].index);
 
   cylinderArray[ 10 ].position.set( 3.55 * multSize, mapLevel, -3.85 * multSize );
   textArray.push(new Text('K ∞', 3.55 * multSize, -3.85 * multSize, 1, 10));
-  loadFont(textArray[10].text, textArray[10].x + xOff, textArray[10].z + zOff, textArray[10].scale, textArray[10].index);
+  loadFont(textArray[10].text, textArray[10].x, textArray[10].z, textArray[10].scale, textArray[10].index);
 
   cylinderArray[ 11 ].position.set( 6.2 * multSize, mapLevel, -12.2 * multSize );
   textArray.push(new Text('L ∞', 6.2 * multSize, -12.2 * multSize, 1, 11));
-  loadFont(textArray[11].text, textArray[11].x + xOff, textArray[11].z + zOff, textArray[11].scale, textArray[11].index);
+  loadFont(textArray[11].text, textArray[11].x, textArray[11].z, textArray[11].scale, textArray[11].index);
 
   cylinderArray[ 12 ].position.set( -8.9 * multSize, mapLevel, -12.2 * multSize );
   textArray.push(new Text('M ∞', -8.9 * multSize, -12.2 * multSize, 1, 12));
-  loadFont(textArray[12].text, textArray[12].x + xOff, textArray[12].z + zOff, textArray[12].scale, textArray[12].index);
+  loadFont(textArray[12].text, textArray[12].x, textArray[12].z, textArray[12].scale, textArray[12].index);
 
   cylinderArray[ 13 ].position.set( -8.9 * multSize, mapLevel, -8.4 * multSize );
   textArray.push(new Text('N ∞', -8.9 * multSize, -8.4 * multSize, 1, 13));
-  loadFont(textArray[13].text, textArray[13].x + xOff, textArray[13].z + zOff, textArray[13].scale, textArray[13].index);
+  loadFont(textArray[13].text, textArray[13].x, textArray[13].z, textArray[13].scale, textArray[13].index);
 
   cylinderArray[ 14 ].position.set( -8.9 * multSize, mapLevel, -3.35 * multSize );
   textArray.push(new Text('O ∞', -8.9 * multSize, -3.35 * multSize, 1, 14));
-  loadFont(textArray[14].text, textArray[14].x + xOff, textArray[14].z + zOff, textArray[14].scale, textArray[14].index);
+  loadFont(textArray[14].text, textArray[14].x, textArray[14].z, textArray[14].scale, textArray[14].index);
 
   cylinderArray[ 15 ].position.set( -8.77 * multSize, mapLevel, 1.22 * multSize );
   textArray.push(new Text('P ∞', -8.77 * multSize, 1.22 * multSize, 1, 15));
-  loadFont(textArray[15].text, textArray[15].x + xOff, textArray[15].z + zOff, textArray[15].scale, textArray[15].index);
+  loadFont(textArray[15].text, textArray[15].x, textArray[15].z, textArray[15].scale, textArray[15].index);
 
   cylinderArray[ 16 ].position.set( -9.3 * multSize, mapLevel, 5.45 * multSize );
   textArray.push(new Text('Q ∞', -9.3 * multSize, 5.45 * multSize, 1, 16));
-  loadFont(textArray[16].text, textArray[16].x + xOff, textArray[16].z + zOff, textArray[16].scale, textArray[16].index);
+  loadFont(textArray[16].text, textArray[16].x, textArray[16].z, textArray[16].scale, textArray[16].index);
 
   cylinderArray[ 17 ].position.set( -9.1 * multSize, mapLevel, 11.2 * multSize );
   textArray.push(new Text('R ∞', -9.1 * multSize, 11.2 * multSize, 1, 17));
-  loadFont(textArray[17].text, textArray[17].x + xOff, textArray[17].z + zOff, textArray[17].scale, textArray[17].index);
+  loadFont(textArray[17].text, textArray[17].x, textArray[17].z, textArray[17].scale, textArray[17].index);
 
   cylinderArray[ 18 ].position.set( -1.29 * multSize, mapLevel, 10.8 * multSize );
   textArray.push(new Text('S ∞', -1.29 * multSize, 10.8 * multSize, 1, 18));
-  loadFont(textArray[18].text, textArray[18].x + xOff, textArray[18].z + zOff, textArray[18].scale, textArray[18].index);
+  loadFont(textArray[18].text, textArray[18].x, textArray[18].z, textArray[18].scale, textArray[18].index);
 
   cylinderArray[ 19 ].position.set( 5.8 * multSize, mapLevel, 8.3 * multSize );
   textArray.push(new Text('T ∞', 5.8 * multSize, 8.3 * multSize, 1, 19));
-  loadFont(textArray[19].text, textArray[19].x + xOff, textArray[19].z + zOff, textArray[19].scale, textArray[19].index);
+  loadFont(textArray[19].text, textArray[19].x, textArray[19].z, textArray[19].scale, textArray[19].index);
 
   cylinderArray[ 20 ].position.set( 3.55 * multSize, mapLevel, 5.2 * multSize );
   textArray.push(new Text('U ∞', 3.55 * multSize, 5.2 * multSize, 1, 20));
-  loadFont(textArray[20].text, textArray[20].x + xOff, textArray[20].z + zOff, textArray[20].scale, textArray[20].index);
+  loadFont(textArray[20].text, textArray[20].x, textArray[20].z, textArray[20].scale, textArray[20].index);
 
   cylinderArray[ 21 ].position.set( 3.17 * multSize, mapLevel, 2.62 * multSize );
   textArray.push(new Text('V ∞', 3.17 * multSize, 2.62 * multSize, 1, 21));
-  loadFont(textArray[21].text, textArray[21].x + xOff, textArray[21].z + zOff, textArray[21].scale, textArray[21].index);
-  
+  loadFont(textArray[21].text, textArray[21].x, textArray[21].z, textArray[21].scale, textArray[21].index);
+
   for(var i = 0 ; i<texts.length;i++){
 	console.log(texts[i]);
   }
   console.log("hmmmm");
 
   //changeTColor(0, 0x000fff);
-  
+
   let linematerial;
 
   let lineGeometryArray = new Array();
@@ -632,12 +631,12 @@ function mainFunction() {
    * concatinate letter + weight -> 'letter weight'
    * loadFont('letter weight', textArray[index].x, textArray[index].z, textArray[index].scale, index);
    */
-   
+
   function updatePathLength(index, pathLength){
 	var letter = String.fromCharCode("A".charCodeAt(0) + index);
 	loadFont(letter + " " + pathLength, textArray[index].x, textArray[index].z, textArray[index].scale, index);
   }
-   
+
   async function shortestPath( edges, numVertices, startVertex, endVertex, adj, speed )
   {
 
@@ -651,7 +650,7 @@ function mainFunction() {
 		console.log(texts[i]);
 	}
 	console.log("kekekek");
-	
+
     for ( var i = 0; i < numVertices; i++ )
     {
       // If there is an edge between the starting vertex and this vertex, set the shortest path equal to that path length
@@ -664,21 +663,21 @@ function mainFunction() {
         // Pause here and light up edges[startVertex][i]
         colorChange( adj[ startVertex ][ i ], 0xff0000 );
         // Light up pathLengths[i]
-		
+
 		updatePathLength(i, parseInt(pathLengths[i]));
 		changeTColor(i, 0x000fff);
 		await sleep( 1000 / speed );
 		changeTColor(i, 0x000000);
-		
-		
+
+
         console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
         await sleep( 1000 / speed );
         colorChange(adj[startVertex][i], 0x0000ff);
 
-		
+
         predecessors[ i ] = startVertex;
-		
-		
+
+
       }
     }
 
