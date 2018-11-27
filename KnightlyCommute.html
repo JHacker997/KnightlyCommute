@@ -117,6 +117,7 @@ function mainFunction() {
     loader.load('Montserrat_Regular.js', function (res) {
       font = res;
       createText(word, x, z, s, i);
+	  render();
     });
   }
 
@@ -634,7 +635,12 @@ function mainFunction() {
 
   function updatePathLength(index, pathLength){
 	var letter = String.fromCharCode("A".charCodeAt(0) + index);
-	loadFont(letter + " " + pathLength, textArray[index].x, textArray[index].z, textArray[index].scale, index);
+	if (pathLength !=Infinity){
+		loadFont(letter + " " + pathLength, textArray[index].x, textArray[index].z, textArray[index].scale, index);
+	}
+	else{
+		loadFont(letter + " " + "∞", textArray[index].x, textArray[index].z, textArray[index].scale, index);
+	}
   }
 
   async function shortestPath( edges, numVertices, startVertex, endVertex, adj, speed )
@@ -881,6 +887,7 @@ function mainFunction() {
   	if (!isRunning){
 
   		for (var i = 0; i < 22; i++) {
+			updatePathLength(i, Infinity);
   			for (var j = 0; j < 22; j++){
   				if (adjacencies[ i][ j ] != Infinity) {
   					colorChange( adjacencies[ i][ j ], 0x0000ff );
