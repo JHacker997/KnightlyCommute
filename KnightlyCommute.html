@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
     <title>Knightly Commute</title>
     <script src= "https://threejs.org/build/three.js"> </script>
     <script src= "https://threejs.org/examples/js/controls/OrbitControls.js"> </script>
@@ -10,897 +9,914 @@
     <script src= "https://threejs.org/examples/js/loaders/MTLLoader.js"> </script>
 
 
-
-<script>
-// Add your own Javascript code/methods here.
-const multSize = 2;
-const mapLevel = 74.42;
-
-function mainFunction() {
-  let renderer = new THREE.WebGLRenderer( {
-    antialias: true
-  } ); //let renderer = new THREE.WebGLRenderer();
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setClearColor( 0x888888, 1 );
-  document.body.appendChild( renderer.domElement );
-
-  let scene = new THREE.Scene();
-
-  let aspect = window.innerWidth / window.innerHeight;
-  let camera = new THREE.PerspectiveCamera( 50, aspect, 1, 1000 );
-  camera.position.y = 150;
-  camera.position.z = 5;
-  scene.add( camera );
-
-  let light = new THREE.PointLight( 0xffffff, 1, 100 );
-  light.position.set( 0, 100, 1 );
-  scene.add( light );
-  let ambient = new THREE.AmbientLight( 0xffffff, 0.3 );
-  scene.add( ambient );
-
-  let envLoader = new THREE.CubeTextureLoader();
-  envLoader.setPath( "./cubeMap/" );
-  let textureCube = envLoader.load( [
-    "px.png", "nx.png",
-    "py.png", "ny.png",
-    "pz.png", "nz.png"
-  ] );
-  scene.background = textureCube;
-
-  let render = function() {
-    renderer.render( scene, camera );
-  };
-
-  let cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
-  cameraControls.addEventListener( "change", render, false );
-  cameraControls.target.y = mapLevel;
-
-  let mtlLoader = new THREE.MTLLoader();
-
-  mtlLoader.load( "./computerDesk/Magis_XZ3_200_mat(1).mtl", function( materials ) {
-    materials.preload();
-
-    let objLoader = new THREE.OBJLoader();
-    objLoader.setMaterials( materials );
-    objLoader.load( "./computerDesk/Magis_XZ3_200_mat(1).obj", function( obj ) {
-      obj.position.x = 10;
-      obj.rotation.x = -Math.PI / 2;
-      obj.rotation.z = Math.PI / 2;
-      scene.add( obj );
-      render();
-    } );
-  } );
-
-  let texture = THREE.ImageUtils.loadTexture( "mapper.png" );
-  let material = new THREE.MeshLambertMaterial( {
-    map: texture
-  } );
-  let wood = new THREE.TextureLoader().load( "./woodTex.png" );
-  let floorMaterial = new THREE.MeshLambertMaterial( {
-    side: THREE.DoubleSide,
-    map: wood
-  } );
-  let plane = new THREE.Mesh( new THREE.PlaneGeometry( 21.6 * multSize, 28.275 * multSize ), material );
-  let floorplane = new THREE.Mesh( new THREE.PlaneGeometry( 400, 200 ), floorMaterial );
-  plane.rotation.x = Math.PI / 2;
-  plane.rotation.z = Math.PI;
-  plane.rotation.y = Math.PI;
-
-  scene.add( plane );
-
-  /*
-   * Show text on map.
-   * Params: LoadFont('text', xPosition, zPosition, scaleMultiplier)
-   */
-  var texts = [ ...Array( 22 ) ];
-  for (let i = 0; i < 22; i++)
-  {
-    texts[i] = null;
-  }
-
-
-  let   height = 0,
-        size = 10,
-        curveSegments = 10,
-        bevelThickness = 1,
-        bevelSize = 0.3,
-        bevelSegments = 3,
-        bevelEnabled = true,
-        font = undefined;
-
-
-
-  function loadFont(word, x, z, s, i)
-  {
-    let loader = new THREE.FontLoader();
-    loader.load('Montserrat_Regular.js', function (res) {
-      font = res;
-      createText(word, x, z, s, i);
-    });
-  }
-
-  function createText(word, x, z, s, i)
-  {
-    textGeo = new THREE.TextGeometry( word, {
-      font: font,
-      size: size,
-      height: height,
-      curveSegments:curveSegments,
-      weight: "normal",
-      bevelThickness:bevelThickness,
-      bevelSize:bevelSize,
-      bevelSegments:bevelSegments,
-      bevelEnabled:bevelEnabled
-    });
-    textGeo.computeBoundingBox();
-    textGeo.computeVertexNormals();
-    let cubeMat = new THREE.MeshLambertMaterial({color: 0x000000})
-    let text = new THREE.Mesh(textGeo, cubeMat)
-    text.rotation.x = Math.PI / 2;
-    text.rotation.y = Math.PI;
-    text.rotation.z = Math.PI;
-    text.position.x = x;
-    text.position.y = mapLevel + .1;
-    text.position.z = z;
-    let scale = .1 * s;
-    text.scale.x = scale;
-    text.scale.y = scale;
-    text.scale.z = .25;
-    text.castShadow = true;
-	if (i == 6)
-    {
-      text.position.z -= zOff + .75;
-    }
-    if (texts[i] != null)
-    {
-      scene.remove(texts[i]);
-    }
-    texts[i] = text;
-	//console.log(texts[i]);
-    scene.add(text);
-  }
-
-
-  //hex value for ncolor
-  function changeTColor(index, ncolor)
-  {
-	//console.log(texts[index]);
-    texts[index].material = new THREE.MeshLambertMaterial({color: ncolor})
-	render();
-  }
-
-  let cylinderGeometry = new THREE.CylinderGeometry( 0.2 * multSize, 0.2 * multSize, 2 * multSize );
-  let intermedMaterial = new THREE.MeshLambertMaterial( {
-    color: 0x00ff00
-  } );
-  let nodeMaterial = new THREE.MeshLambertMaterial( {
-    color: 0xff0000
-  } );
-  let cylinderArray = [];
-  let intermedNodesArray = new Array();
-  let numNodes = 22;
-  for ( let i = 0; i < numNodes; i++ ) {
-    cylinderArray.push( new THREE.Mesh( cylinderGeometry, nodeMaterial ) );
-    scene.add( cylinderArray[ i ] );
-  }
-
-  let xOff = -1, zOff = 1.5;
-  function Text(text, x, z, scale, index)
-  {
-    this.text = text;
-    this.x = x + xOff;
-    this.z = z + zOff;
-    this.scale = scale;
-    this.index = index;
-  }
-  let textArray = [];
-
-  cylinderArray[ 0 ].position.set( 1.7 * multSize, mapLevel, -0.42 * multSize );
-  textArray.push(new Text('A ∞', 1.7 * multSize, -0.42 * multSize, 1, 0));
-  texts[0] = loadFont(textArray[0].text, textArray[0].x, textArray[0].z, textArray[0].scale, textArray[0].index);
-
-  cylinderArray[ 1 ].position.set( -0.48 * multSize, mapLevel, 1.3 * multSize );
-  textArray.push(new Text('B ∞', -0.48 * multSize, 1.3 * multSize, 1, 1));
-  loadFont(textArray[1].text, textArray[1].x, textArray[1].z, textArray[1].scale, textArray[1].index);
-
-  cylinderArray[ 2 ].position.set( -4.15 * multSize, mapLevel, 0.95 * multSize );
-  textArray.push(new Text('C ∞', -4.15 * multSize, 0.95 * multSize, 1, 2));
-  loadFont(textArray[2].text, textArray[2].x, textArray[2].z, textArray[2].scale, textArray[2].index);
-
-  cylinderArray[ 3 ].position.set( -6.8 * multSize, mapLevel, -0.10 * multSize );
-  textArray.push(new Text('D ∞', -6.8 * multSize, -0.10 * multSize, 1, 3));
-  loadFont(textArray[3].text, textArray[3].x, textArray[3].z, textArray[3].scale, textArray[3].index);
-
-  cylinderArray[ 4 ].position.set( -6.7 * multSize, mapLevel, -3.55 * multSize );
-  textArray.push(new Text('E ∞', -6.7 * multSize, -3.55 * multSize, 1, 4));
-  loadFont(textArray[4].text, textArray[4].x, textArray[4].z, textArray[4].scale, textArray[4].index);
-
-  cylinderArray[ 5 ].position.set( -4.75 * multSize, mapLevel, -7.5 * multSize );
-  textArray.push(new Text('F ∞', -4.75 * multSize, -7.5 * multSize, 1, 5));
-  loadFont(textArray[5].text, textArray[5].x, textArray[5].z, textArray[5].scale, textArray[5].index);
-
-  cylinderArray[ 6 ].position.set( 0.5 * multSize, mapLevel, -7.6 * multSize );
-  textArray.push(new Text('G ∞', 0.5 * multSize, -7.6 * multSize, 1, 6));
-  loadFont(textArray[6].text, textArray[6].x, textArray[6].z, textArray[6].scale, textArray[6].index);
-
-  cylinderArray[ 7 ].position.set( 1.61 * multSize, mapLevel, -7.35 * multSize );
-  textArray.push(new Text('H ∞', 1.61 * multSize, -7.35 * multSize, 1, 7));
-  loadFont(textArray[7].text, textArray[7].x, textArray[7].z, textArray[7].scale, textArray[7].index);
-
-  cylinderArray[ 8 ].position.set( 2.3 * multSize, mapLevel, -6.29 * multSize );
-  textArray.push(new Text('I ∞', 2.3 * multSize, -6.29 * multSize, 1, 8));
-  loadFont(textArray[8].text, textArray[8].x, textArray[8].z, textArray[8].scale, textArray[8].index);
-
-  cylinderArray[ 9 ].position.set( 2.62 * multSize, mapLevel, -5.22 * multSize );
-  textArray.push(new Text('J ∞', 2.62 * multSize, -5.22 * multSize, 1, 9));
-  loadFont(textArray[9].text, textArray[9].x, textArray[9].z, textArray[9].scale, textArray[9].index);
-
-  cylinderArray[ 10 ].position.set( 3.55 * multSize, mapLevel, -3.85 * multSize );
-  textArray.push(new Text('K ∞', 3.55 * multSize, -3.85 * multSize, 1, 10));
-  loadFont(textArray[10].text, textArray[10].x, textArray[10].z, textArray[10].scale, textArray[10].index);
-
-  cylinderArray[ 11 ].position.set( 6.2 * multSize, mapLevel, -12.2 * multSize );
-  textArray.push(new Text('L ∞', 6.2 * multSize, -12.2 * multSize, 1, 11));
-  loadFont(textArray[11].text, textArray[11].x, textArray[11].z, textArray[11].scale, textArray[11].index);
-
-  cylinderArray[ 12 ].position.set( -8.9 * multSize, mapLevel, -12.2 * multSize );
-  textArray.push(new Text('M ∞', -8.9 * multSize, -12.2 * multSize, 1, 12));
-  loadFont(textArray[12].text, textArray[12].x, textArray[12].z, textArray[12].scale, textArray[12].index);
-
-  cylinderArray[ 13 ].position.set( -8.9 * multSize, mapLevel, -8.4 * multSize );
-  textArray.push(new Text('N ∞', -8.9 * multSize, -8.4 * multSize, 1, 13));
-  loadFont(textArray[13].text, textArray[13].x, textArray[13].z, textArray[13].scale, textArray[13].index);
-
-  cylinderArray[ 14 ].position.set( -8.9 * multSize, mapLevel, -3.35 * multSize );
-  textArray.push(new Text('O ∞', -8.9 * multSize, -3.35 * multSize, 1, 14));
-  loadFont(textArray[14].text, textArray[14].x, textArray[14].z, textArray[14].scale, textArray[14].index);
-
-  cylinderArray[ 15 ].position.set( -8.77 * multSize, mapLevel, 1.22 * multSize );
-  textArray.push(new Text('P ∞', -8.77 * multSize, 1.22 * multSize, 1, 15));
-  loadFont(textArray[15].text, textArray[15].x, textArray[15].z, textArray[15].scale, textArray[15].index);
-
-  cylinderArray[ 16 ].position.set( -9.3 * multSize, mapLevel, 5.45 * multSize );
-  textArray.push(new Text('Q ∞', -9.3 * multSize, 5.45 * multSize, 1, 16));
-  loadFont(textArray[16].text, textArray[16].x, textArray[16].z, textArray[16].scale, textArray[16].index);
-
-  cylinderArray[ 17 ].position.set( -9.1 * multSize, mapLevel, 11.2 * multSize );
-  textArray.push(new Text('R ∞', -9.1 * multSize, 11.2 * multSize, 1, 17));
-  loadFont(textArray[17].text, textArray[17].x, textArray[17].z, textArray[17].scale, textArray[17].index);
-
-  cylinderArray[ 18 ].position.set( -1.29 * multSize, mapLevel, 10.8 * multSize );
-  textArray.push(new Text('S ∞', -1.29 * multSize, 10.8 * multSize, 1, 18));
-  loadFont(textArray[18].text, textArray[18].x, textArray[18].z, textArray[18].scale, textArray[18].index);
-
-  cylinderArray[ 19 ].position.set( 5.8 * multSize, mapLevel, 8.3 * multSize );
-  textArray.push(new Text('T ∞', 5.8 * multSize, 8.3 * multSize, 1, 19));
-  loadFont(textArray[19].text, textArray[19].x, textArray[19].z, textArray[19].scale, textArray[19].index);
-
-  cylinderArray[ 20 ].position.set( 3.55 * multSize, mapLevel, 5.2 * multSize );
-  textArray.push(new Text('U ∞', 3.55 * multSize, 5.2 * multSize, 1, 20));
-  loadFont(textArray[20].text, textArray[20].x, textArray[20].z, textArray[20].scale, textArray[20].index);
-
-  cylinderArray[ 21 ].position.set( 3.17 * multSize, mapLevel, 2.62 * multSize );
-  textArray.push(new Text('V ∞', 3.17 * multSize, 2.62 * multSize, 1, 21));
-  loadFont(textArray[21].text, textArray[21].x, textArray[21].z, textArray[21].scale, textArray[21].index);
-
-
-  let linematerial;
-
-  let lineGeometryArray = new Array();
-  let lineMathArray = new Array();
-
-  function createLineVector( v1, v2, index, addPoints ) {
-    linematerial = new THREE.LineBasicMaterial( {
-      color: 0x0000ff
-    } );
-
-    let numLines = 0;
-
-    let liner = new THREE.Geometry();
-
-    lineGeometryArray[ index ] = new Array();
-    lineMathArray[ index ] = new Array();
-    if ( addPoints != null ) {
-      let point1 = new THREE.Vector3( v1.x, 74.8, v1.z );
-      liner.vertices.push(
-        point1
-      );
-
-      let pointsLine = 1;
-      let numPoints = addPoints.length;
-      for ( let i = 0; i < numPoints; i++ ) {
-        let point2 = new THREE.Vector3( addPoints[ i ].position.x, 74.8, addPoints[ i ].position.z );
-        liner.vertices.push(
-          point2
-        );
-        pointsLine++;
-        if ( pointsLine == 2 ) {
-          lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
-          lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
-          scene.add( lineGeometryArray[ index ][ numLines++ ] );
-          point1 = new THREE.Vector3( addPoints[ i ].position.x, 74.8, addPoints[ i ].position.z );
-          liner.vertices.push(
-            point1
-          );
-          pointsLine = 1;
-        }
-      }
-      point2 = new THREE.Vector3( v2.x, 74.8, v2.z );
-      liner.vertices.push(
-        point2
-      );
-      pointsLine++;
-
-      if ( pointsLine == 2 ) {
-        lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
-        lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
-        scene.add( lineGeometryArray[ index ][ numLines++ ] );
-        pointsLine = 1;
-      }
-
-    } else {
-      liner.vertices.push(
-        new THREE.Vector3( v1.x, 74.8, v1.z ),
-        new THREE.Vector3( v2.x, 74.8, v2.z )
-      );
-      lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
-      scene.add( lineGeometryArray[ index ][ numLines ] );
-    }
-
-  }
-
-  let numEdges = 0;
-
-  // intermediary nodes
-  let numPerTier = [];
-
-  function createInterNodes( numInt, indexTier ) {
-    numPerTier.push( numInt );
-    intermedNodesArray[ indexTier ] = new Array();
-    for ( let i = 0; i < numPerTier[ indexTier ]; i++ ) {
-      intermedNodesArray[ indexTier ].push( new THREE.Mesh( cylinderGeometry, intermedMaterial ) );
-      //scene.add( intermedNodesArray[ indexTier ][ i ] );
-    }
-  }
-  createInterNodes( 2, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 1 ].position.x + 3, mapLevel, cylinderArray[ 0 ].position.z + 2 );
-
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 1 ].position.x + 2, mapLevel, cylinderArray[ 1 ].position.z - 0.5 );
-
-  createLineVector( cylinderArray[ 0 ].position, cylinderArray[ 1 ].position, numEdges++, intermedNodesArray[ 0 ] );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 1 ].position.x - 2, mapLevel, cylinderArray[ 1 ].position.z + 0.75 );
-
-  createLineVector( cylinderArray[ 1 ].position, cylinderArray[ 2 ].position, numEdges++, intermedNodesArray[ 1 ] );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 2 ].position, cylinderArray[ 3 ].position, numEdges++ );
-
-  createInterNodes( 3, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 3 ].position.x - 1.8, mapLevel, cylinderArray[ 3 ].position.z - 2.5 );
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 3 ].position.x - 1.5, mapLevel, cylinderArray[ 3 ].position.z - 4 );
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 3 ].position.x - 0.5, mapLevel, cylinderArray[ 3 ].position.z - 5.5 );
-
-  createLineVector( cylinderArray[ 3 ].position, cylinderArray[ 4 ].position, numEdges++, intermedNodesArray[ 3 ] );
-
-  createInterNodes( 4, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 4 ].position.x - 1, mapLevel, cylinderArray[ 4 ].position.z - 2 );
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 4 ].position.x - 1.5, mapLevel, cylinderArray[ 4 ].position.z - 3 );
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 4 ].position.x - 1.5, mapLevel, cylinderArray[ 4 ].position.z - 4 );
-  intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 4 ].position.x + 1, mapLevel, cylinderArray[ 4 ].position.z - 6 );
-
-  createLineVector( cylinderArray[ 4 ].position, cylinderArray[ 5 ].position, numEdges++, intermedNodesArray[ 4 ] );
-
-  createInterNodes( 4, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 5 ].position.x + 1.5, mapLevel, cylinderArray[ 5 ].position.z + 1.2 );
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 5 ].position.x + 2.7, mapLevel, cylinderArray[ 5 ].position.z + 1.5 );
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 5 ].position.x + 4, mapLevel, cylinderArray[ 5 ].position.z + 1.3 );
-  intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 5 ].position.x + 7, mapLevel, cylinderArray[ 5 ].position.z + 0.5 );
-
-  createLineVector( cylinderArray[ 5 ].position, cylinderArray[ 6 ].position, numEdges++, intermedNodesArray[ 5 ] );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 6 ].position, cylinderArray[ 7 ].position, numEdges++ );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 7 ].position.x + 1, mapLevel, cylinderArray[ 7 ].position.z + 1 );
-
-  createLineVector( cylinderArray[ 7 ].position, cylinderArray[ 8 ].position, numEdges++, intermedNodesArray[ 7 ] );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 8 ].position, cylinderArray[ 9 ].position, numEdges++ );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 8 ].position.x + 2, mapLevel, cylinderArray[ 9 ].position.z + 1.5 );
-
-  createLineVector( cylinderArray[ 9 ].position, cylinderArray[ 10 ].position, numEdges++, intermedNodesArray[ 9 ] );
-
-  createInterNodes( 2, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 10 ].position.x + 0.4, mapLevel, cylinderArray[ 10 ].position.z + 2 );
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 10 ].position.x - 0.3, mapLevel, cylinderArray[ 10 ].position.z + 4 );
-
-  createLineVector( cylinderArray[ 10 ].position, cylinderArray[ 0 ].position, numEdges++, intermedNodesArray[ 10 ] );
-
-  createInterNodes( 8, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 11 ].position.x - 3, mapLevel, cylinderArray[ 8 ].position.z - 1.5 );
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 11 ].position.x + 0.5, mapLevel, cylinderArray[ 8 ].position.z - 1.8 );
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 11 ].position.x + 2, mapLevel, cylinderArray[ 8 ].position.z - 2.5 );
-  intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 11 ].position.x + 2.8, mapLevel, cylinderArray[ 8 ].position.z - 4 );
-  intermedNodesArray[ numEdges ][ 4 ].position.set( cylinderArray[ 11 ].position.x + 2.4, mapLevel, cylinderArray[ 8 ].position.z - 5.5 );
-  intermedNodesArray[ numEdges ][ 5 ].position.set( cylinderArray[ 11 ].position.x + 1.5, mapLevel, cylinderArray[ 8 ].position.z - 7 );
-  intermedNodesArray[ numEdges ][ 6 ].position.set( cylinderArray[ 11 ].position.x + 0.5, mapLevel, cylinderArray[ 8 ].position.z - 8.8 );
-
-  intermedNodesArray[ numEdges ][ 7 ].position.set( cylinderArray[ 11 ].position.x, mapLevel, cylinderArray[ 11 ].position.z + 1.5 );
-
-  createLineVector( cylinderArray[ 8 ].position, cylinderArray[ 11 ].position, numEdges++, intermedNodesArray[ 11 ] );
-
-
-  createInterNodes( 4, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 7 ].position.x + 3, mapLevel, cylinderArray[ 7 ].position.z - 4.8 );
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 7 ].position.x + 5.5, mapLevel, cylinderArray[ 7 ].position.z - 6.4 );
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 7 ].position.x + 5.5, mapLevel, cylinderArray[ 7 ].position.z - 7.7 );
-  intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 7 ].position.x + 9, mapLevel, cylinderArray[ 7 ].position.z - 8 );
-
-  createLineVector( cylinderArray[ 7 ].position, cylinderArray[ 11 ].position, numEdges++, intermedNodesArray[ 12 ] );
-
-  createInterNodes( 4, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 6 ].position.x + 3.2, mapLevel, cylinderArray[ 6 ].position.z - 6.4 );
-
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 6 ].position.x + 5.5, mapLevel, cylinderArray[ 6 ].position.z - 7.3 );
-
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 6 ].position.x + 7.8, mapLevel, cylinderArray[ 6 ].position.z - 7.3 );
-  intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 6 ].position.x + 11.3, mapLevel, cylinderArray[ 6 ].position.z - 7.6 );
-
-  createLineVector( cylinderArray[ 6 ].position, cylinderArray[ 11 ].position, numEdges++, intermedNodesArray[ 13 ] );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 11 ].position, cylinderArray[ 12 ].position, numEdges++ );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 12 ].position, cylinderArray[ 13 ].position, numEdges++ );
-
-  createInterNodes( 2, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 13 ].position.x + 5, mapLevel, cylinderArray[ 13 ].position.z );
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 13 ].position.x + 7, mapLevel, cylinderArray[ 13 ].position.z + 0.5 );
-
-  createLineVector( cylinderArray[ 13 ].position, cylinderArray[ 5 ].position, numEdges++, intermedNodesArray[ 16 ] );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 13 ].position, cylinderArray[ 14 ].position, numEdges++ );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 14 ].position, cylinderArray[ 4 ].position, numEdges++ );
-
-  createInterNodes( 0, numEdges );
-
-  createLineVector( cylinderArray[ 14 ].position, cylinderArray[ 15 ].position, numEdges++ );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 15 ].position.x + 2, mapLevel, cylinderArray[ 15 ].position.z - 1 );
-
-  createLineVector( cylinderArray[ 15 ].position, cylinderArray[ 3 ].position, numEdges++, intermedNodesArray[ 20 ] );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 15 ].position.x, mapLevel, cylinderArray[ 15 ].position.z + 5 );
-
-  createLineVector( cylinderArray[ 15 ].position, cylinderArray[ 16 ].position, numEdges++, intermedNodesArray[ 21 ] );
-
-  createInterNodes( 2, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 16 ].position.x + 4, mapLevel, cylinderArray[ 16 ].position.z );
-
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 16 ].position.x + 5.9, mapLevel, cylinderArray[ 16 ].position.z - 1.5 );
-
-  createLineVector( cylinderArray[ 16 ].position, cylinderArray[ 2 ].position, numEdges++, intermedNodesArray[ 22 ] );
-
-  createInterNodes( 3, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 16 ].position.x - 0.8, mapLevel, cylinderArray[ 16 ].position.z + 2.5 );
-
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 16 ].position.x - 1.2, mapLevel, cylinderArray[ 16 ].position.z + 5 );
-
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 16 ].position.x - 1, mapLevel, cylinderArray[ 16 ].position.z + 8 );
-
-  createLineVector( cylinderArray[ 16 ].position, cylinderArray[ 17 ].position, numEdges++, intermedNodesArray[ 23 ] );
-
-  createInterNodes( 4, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 17 ].position.x + 6, mapLevel, cylinderArray[ 17 ].position.z - 1.3 );
-
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 17 ].position.x + 8, mapLevel, cylinderArray[ 17 ].position.z - 2.1 );
-
-  intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 17 ].position.x + 10, mapLevel, cylinderArray[ 17 ].position.z - 3.2 );
-
-  intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 17 ].position.x + 13, mapLevel, cylinderArray[ 17 ].position.z - 2.8 );
-
-  createLineVector( cylinderArray[ 17 ].position, cylinderArray[ 18 ].position, numEdges++, intermedNodesArray[ 24 ] );
-
-  createInterNodes( 2, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 18 ].position.x + 3.5, mapLevel, cylinderArray[ 17 ].position.z + 0.1 );
-
-  intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 18 ].position.x + 6.5, mapLevel, cylinderArray[ 17 ].position.z - 0.8 );
-
-  createLineVector( cylinderArray[ 18 ].position, cylinderArray[ 19 ].position, numEdges++, intermedNodesArray[ 25 ] );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 19 ].position.x - 0.5, mapLevel, cylinderArray[ 19 ].position.z - 4 );
-
-  createLineVector( cylinderArray[ 19 ].position, cylinderArray[ 20 ].position, numEdges++, intermedNodesArray[ 26 ] );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 20 ].position.x - 0.9, mapLevel, cylinderArray[ 20 ].position.z - 2.4 );
-
-  createLineVector( cylinderArray[ 20 ].position, cylinderArray[ 21 ].position, numEdges++, intermedNodesArray[ 27 ] );
-
-  createInterNodes( 1, numEdges );
-
-  intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 21 ].position.x - 0.5, mapLevel, cylinderArray[ 21 ].position.z - 3 );
-
-  createLineVector( cylinderArray[ 21 ].position, cylinderArray[ 0 ].position, numEdges++, intermedNodesArray[ 28 ] );
-
-  function Edge( length, lines ) {
-    this.length = length;
-    this.lines = lines;
-  }
-
-  var _ = Infinity;
-
-  var adjacencies = [
-    //  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
-    [ _, 0, _, _, _, _, _, _, _, _, 10, _, _, _, _, _, _, _, _, _, _, 28 ], //0
-    [ 0, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ], //1
-    [ _, 1, _, 2, _, _, _, _, _, _, _, _, _, _, _, _,22, _, _, _, _, _ ], //2
-    [ _, _, 2, _, 3, _, _, _, _, _, _, _, _, _, _, 20, _, _, _, _, _, _ ], //3
-    [ _, _, _, 3, _, 4, _, _, _, _, _, _, _, _, 18, _, _, _, _, _, _, _ ], //4
-    [ _, _, _, _, 4, _, 5, _, _, _, _, _, _, 16, _, _, _, _, _, _, _, _ ], //5
-    [ _, _, _, _, _, 5, _, 6, _, _, _, 13, _, _, _, _, _, _, _, _, _, _ ], //6
-    [ _, _, _, _, _, _, 6, _, 7, _, _, 12, _, _, _, _, _, _, _, _, _, _ ], //7
-    [ _, _, _, _, _, _, _, 7, _, 8, _, 11, _, _, _, _, _, _, _, _, _, _ ], //8
-    [ _, _, _, _, _, _, _, _, 8, _, 9, _, _, _, _, _, _, _, _, _, _, _ ], //9
-    [ 10, _, _, _, _, _, _, _, _, 9, _, _, _, _, _, _, _, _, _, _, _, _ ], //10
-    [ _, _, _, _, _, _,13,12,11, _, _, _, 14, _, _, _, _, _, _, _, _, _ ], //11
-    [ _, _, _, _, _, _, _, _, _, _, _, 14, _, 15, _, _, _, _, _, _, _, _ ], //12
-    [ _, _, _, _, _, 16, _, _, _, _, _, _, 15, _, 17, _, _, _, _, _, _, _ ], //13
-    [ _, _, _, _, 18, _, _, _, _, _, _, _, _, 17, _, 19, _, _, _, _, _, _ ], //14
-    [ _, _, _, 20, _, _, _, _, _, _, _, _, _, _, 19, _, 21, _, _, _, _, _ ], //15
-    [ _, _, 22, _, _, _, _, _, _, _, _, _, _, _, _, 21, _, 23, _, _, _, _ ], //16
-    [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 23, _, 24, _, _, _ ], //17
-    [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 24, _, 25, _, _ ], //18
-    [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 25, _, 26, _ ], //19
-    [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 26, _, 27 ], //20
-    [ 28, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 27, _ ] //21
-  ];
-
-  var edgeMatrix = [ ...Array( adjacencies.length ) ].map( e => Array( adjacencies.length ) );
-
-
-  for ( i = 0; i < adjacencies.length; i++ ) {
-    for ( j = 0; j < adjacencies[ 0 ].length; j++ ) {
-      if ( adjacencies[ i ][ j ] != Infinity ) {
-        edgeMatrix[ i ][ j ] = new Edge( cylinderArray[ i ].position.distanceTo( cylinderArray[ j ].position ), lineGeometryArray[ adjacencies[ i ][ j ] ] );
-        //edgeMatrix[j][i] = edgeMatrix[i][j];
-      } else
-        edgeMatrix[ i ][ j ] = new Edge( Infinity, new Array() );
-    }
-  }
-
-  function colorChange( index, color ) {
-    lineGeometryArray[ index ].forEach( function( line ) {
-      line.material.color = new THREE.Color( color );
-      line.material.needsUpdate = true;
-      render();
-    } );
-  };
-
-
-  function sleep( ms )
-  {
-    return new Promise( resolve => setTimeout( resolve, ms ) );
-  }
-
-  /* index -> letter
-   * concatinate letter + weight -> 'letter weight'
-   * loadFont('letter weight', textArray[index].x, textArray[index].z, textArray[index].scale, index);
-   */
-
-  function updatePathLength(index, pathLength){
-	var letter = String.fromCharCode(0 + + "A".charCodeAt(0) + + index);
-	if (pathLength !=Infinity){
-		loadFont(letter + " " + pathLength, textArray[index].x, textArray[index].z, textArray[index].scale, index);
-	}
-	else{
-		loadFont(letter + " " + "∞", textArray[index].x, textArray[index].z, textArray[index].scale, index);
-	}
-  }
-
-  async function shortestPath( edges, numVertices, startVertex, endVertex, adj, speed )
-  {
-
-    var done = new Array( numVertices );
-    done[ startVertex ] = true;
-    var pathLengths = new Array( numVertices );
-    var predecessors = new Array( numVertices );
-
-
-	// The distance from the start node to itself is always 0
-    pathLengths[ startVertex ] = 0;
-	//console.log(startVertex);
-	updatePathLength(startVertex, parseInt(pathLengths[startVertex]));
-	changeTColor(startVertex, 0x000fff);
-	await sleep( 1000 / speed );
-	changeTColor(startVertex, 0x000000);
-	
-    for ( var i = 0; i < numVertices; i++ )
-    {
-      // If there is an edge between the starting vertex and this vertex, set the shortest path equal to that path length
-      pathLengths[ i ] = edges[ startVertex ][ i ].length;
-
-      // If we do, set the parent of the end node to the start node
-      if ( edges[ startVertex ][ i ].length != Infinity )
+    <script>
+      // Add your own Javascript code/methods here.
+      const multSize = 2;
+      const mapLevel = 74.42;
+
+      function mainFunction()
       {
-        // Pause here and light up edges[startVertex][i]
-        colorChange( adj[ startVertex ][ i ], 0xff0000 );
-        // Light up pathLengths[i]
+        let renderer = new THREE.WebGLRenderer( {
+          antialias: true
+        } ); //let renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setClearColor( 0x888888, 1 );
+        document.body.appendChild( renderer.domElement );
 
-		updatePathLength(i, parseInt(pathLengths[i]));
-		changeTColor(i, 0x000fff);
-		await sleep( 1000 / speed );
-		changeTColor(i, 0x000000);
+        let scene = new THREE.Scene();
 
+        let aspect = window.innerWidth / window.innerHeight;
+        let camera = new THREE.PerspectiveCamera( 50, aspect, 1, 1000 );
+        camera.position.y = 150;
+        camera.position.z = 5;
+        scene.add( camera );
 
-        //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
-        await sleep( 1000 / speed );
-        colorChange(adj[startVertex][i], 0x0000ff);
+        let light = new THREE.PointLight( 0xffffff, 1, 100 );
+        light.position.set( 0, 100, 1 );
+        scene.add( light );
+        let ambient = new THREE.AmbientLight( 0xffffff, 0.3 );
+        scene.add( ambient );
 
+        let envLoader = new THREE.CubeTextureLoader();
+        envLoader.setPath( "./cubeMap/" );
+        let textureCube = envLoader.load( [
+          "px.png", "nx.png",
+          "py.png", "ny.png",
+          "pz.png", "nz.png"
+        ] );
+        scene.background = textureCube;
 
-        predecessors[ i ] = startVertex;
-
-
-      }
-    }
-
-    
-
-
-    for ( var i = 0; i < numVertices - 1; i++ )
-    {
-      var closest = -1;
-      var closestDistance = Infinity;
-      for ( var j = 0; j < numVertices; j++ )
-      {
-        // If we haven't yet looked at this node and the path length currently
-        // stored is smaller than the closestDistance
-        if ( !done[ j ] && pathLengths[ j ] < closestDistance )
+        let render = function()
         {
-          // The new closest distance is the current path length
-          closestDistance = pathLengths[ j ];
+          renderer.render( scene, camera );
+        };
 
-          // j is the closest node
-          closest = j;
-        }
-      }
+        let cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
+        cameraControls.addEventListener( "change", render, false );
+        cameraControls.target.y = mapLevel;
 
-      //TODO: update value of weight at node
+        let mtlLoader = new THREE.MTLLoader();
 
-      // PAUSE: light up edges[predecessor[closest]][closest]
-      var temp = closest;
-      while ( temp != startVertex )
-      {
-        //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
-        colorChange( adj[ predecessors[ temp ] ][ temp ], 0xff0000 );
-        temp = predecessors[ temp ];
-      }
+        mtlLoader.load( "./computerDesk/Magis_XZ3_200_mat(1).mtl", function( materials ) {
+          materials.preload();
 
-      await sleep( 1000 / speed );
+          let objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials( materials );
+          objLoader.load( "./computerDesk/Magis_XZ3_200_mat(1).obj", function( obj ) {
+            obj.position.x = 10;
+            obj.rotation.x = -Math.PI / 2;
+            obj.rotation.z = Math.PI / 2;
+            scene.add( obj );
+            render();
+          } );
+        } );
 
-      // we've looked at the closest node
-      done[ closest ] = true;
+        let texture = THREE.ImageUtils.loadTexture( "mapper.png" );
+        let material = new THREE.MeshLambertMaterial( {
+          map: texture
+        } );
+        let wood = new THREE.TextureLoader().load( "./woodTex.png" );
+        let floorMaterial = new THREE.MeshLambertMaterial( {
+          side: THREE.DoubleSide,
+          map: wood
+        } );
+        let plane = new THREE.Mesh( new THREE.PlaneGeometry( 21.6 * multSize, 28.275 * multSize ), material );
+        let floorplane = new THREE.Mesh( new THREE.PlaneGeometry( 400, 200 ), floorMaterial );
+        plane.rotation.x = Math.PI / 2;
+        plane.rotation.z = Math.PI;
+        plane.rotation.y = Math.PI;
 
-      if ( closest == endVertex)
-      {
-			//console.log("We found the end vertex!");
-            break;
-      }
+        scene.add( plane );
 
-
-      for ( var j = 0; j < numVertices; j++ )
-      {
-
-        // If we haven't looked at this node yet
-        if ( !done[ j ] )
+        /*
+         * Show text on map.
+         * Params: LoadFont('text', xPosition, zPosition, scaleMultiplier)
+         */
+        var texts = [ ...Array( 22 ) ];
+        for (let i = 0; i < 22; i++)
         {
+          texts[i] = null;
+        }
 
-          // Take the current closest path length and add the edge between the
-          // closest node and this one
-          var possiblyCloserDistance = pathLengths[ closest ] + edges[ closest ][ j ].length;
+        let height = 0,
+            size = 10,
+            curveSegments = 10,
+            bevelThickness = 1,
+            bevelSize = 0.3,
+            bevelSegments = 3,
+            bevelEnabled = true,
+            font = undefined;
 
-          // PAUSE: light up edges[closest][j]
-          if ( edges[ closest ][ j ].length != Infinity )
+        function loadFont(word, x, z, s, i)
+        {
+          let loader = new THREE.FontLoader();
+          loader.load('Montserrat_Regular.js', function (res) {
+            font = res;
+            createText(word, x, z, s, i);
+          });
+        }
+
+        function createText(word, x, z, s, i)
+        {
+          textGeo = new THREE.TextGeometry( word, {
+            font: font,
+            size: size,
+            height: height,
+            curveSegments:curveSegments,
+            weight: "normal",
+            bevelThickness:bevelThickness,
+            bevelSize:bevelSize,
+            bevelSegments:bevelSegments,
+            bevelEnabled:bevelEnabled
+          });
+          textGeo.computeBoundingBox();
+          textGeo.computeVertexNormals();
+          let cubeMat = new THREE.MeshLambertMaterial({color: 0x000000})
+          let text = new THREE.Mesh(textGeo, cubeMat)
+          text.rotation.x = Math.PI / 2;
+          text.rotation.y = Math.PI;
+          text.rotation.z = Math.PI;
+          text.position.x = x;
+          text.position.y = mapLevel + .1;
+          text.position.z = z;
+          let scale = .1 * s;
+          text.scale.x = scale;
+          text.scale.y = scale;
+          text.scale.z = .25;
+          text.castShadow = true;
+      	  if (i == 6)
           {
-            colorChange( adj[ closest ][ j ], 0xff0000 );
-            //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
+            text.position.z -= zOff + .75;
+          }
+          if (texts[i] != null)
+          {
+            scene.remove(texts[i]);
+          }
+          texts[i] = text;
+      	//console.log(texts[i]);
+          scene.add(text);
+        }
+
+
+        //hex value for ncolor
+        function changeTColor(index, ncolor)
+        {
+      	//console.log(texts[index]);
+          texts[index].material = new THREE.MeshLambertMaterial({color: ncolor})
+      	render();
+        }
+
+        let cylinderGeometry = new THREE.CylinderGeometry( 0.2 * multSize, 0.2 * multSize, 2 * multSize );
+        let intermedMaterial = new THREE.MeshLambertMaterial( {
+          color: 0x00ff00
+        } );
+        let nodeMaterial = new THREE.MeshLambertMaterial( {
+          color: 0xff0000
+        } );
+        let cylinderArray = [];
+        let intermedNodesArray = new Array();
+        let numNodes = 22;
+        for ( let i = 0; i < numNodes; i++ )
+        {
+          cylinderArray.push( new THREE.Mesh( cylinderGeometry, nodeMaterial ) );
+          scene.add( cylinderArray[ i ] );
+        }
+
+        let xOff = -1, zOff = 1.5;
+        function Text(text, x, z, scale, index)
+        {
+          this.text = text;
+          this.x = x + xOff;
+          this.z = z + zOff;
+          this.scale = scale;
+          this.index = index;
+        }
+        let textArray = [];
+
+        cylinderArray[ 0 ].position.set( 1.7 * multSize, mapLevel, -0.42 * multSize );
+        textArray.push(new Text('A ∞', 1.7 * multSize, -0.42 * multSize, 1, 0));
+        texts[0] = loadFont(textArray[0].text, textArray[0].x, textArray[0].z, textArray[0].scale, textArray[0].index);
+
+        cylinderArray[ 1 ].position.set( -0.48 * multSize, mapLevel, 1.3 * multSize );
+        textArray.push(new Text('B ∞', -0.48 * multSize, 1.3 * multSize, 1, 1));
+        loadFont(textArray[1].text, textArray[1].x, textArray[1].z, textArray[1].scale, textArray[1].index);
+
+        cylinderArray[ 2 ].position.set( -4.15 * multSize, mapLevel, 0.95 * multSize );
+        textArray.push(new Text('C ∞', -4.15 * multSize, 0.95 * multSize, 1, 2));
+        loadFont(textArray[2].text, textArray[2].x, textArray[2].z, textArray[2].scale, textArray[2].index);
+
+        cylinderArray[ 3 ].position.set( -6.8 * multSize, mapLevel, -0.10 * multSize );
+        textArray.push(new Text('D ∞', -6.8 * multSize, -0.10 * multSize, 1, 3));
+        loadFont(textArray[3].text, textArray[3].x, textArray[3].z, textArray[3].scale, textArray[3].index);
+
+        cylinderArray[ 4 ].position.set( -6.7 * multSize, mapLevel, -3.55 * multSize );
+        textArray.push(new Text('E ∞', -6.7 * multSize, -3.55 * multSize, 1, 4));
+        loadFont(textArray[4].text, textArray[4].x, textArray[4].z, textArray[4].scale, textArray[4].index);
+
+        cylinderArray[ 5 ].position.set( -4.75 * multSize, mapLevel, -7.5 * multSize );
+        textArray.push(new Text('F ∞', -4.75 * multSize, -7.5 * multSize, 1, 5));
+        loadFont(textArray[5].text, textArray[5].x, textArray[5].z, textArray[5].scale, textArray[5].index);
+
+        cylinderArray[ 6 ].position.set( 0.5 * multSize, mapLevel, -7.6 * multSize );
+        textArray.push(new Text('G ∞', 0.5 * multSize, -7.6 * multSize, 1, 6));
+        loadFont(textArray[6].text, textArray[6].x, textArray[6].z, textArray[6].scale, textArray[6].index);
+
+        cylinderArray[ 7 ].position.set( 1.61 * multSize, mapLevel, -7.35 * multSize );
+        textArray.push(new Text('H ∞', 1.61 * multSize, -7.35 * multSize, 1, 7));
+        loadFont(textArray[7].text, textArray[7].x, textArray[7].z, textArray[7].scale, textArray[7].index);
+
+        cylinderArray[ 8 ].position.set( 2.3 * multSize, mapLevel, -6.29 * multSize );
+        textArray.push(new Text('I ∞', 2.3 * multSize, -6.29 * multSize, 1, 8));
+        loadFont(textArray[8].text, textArray[8].x, textArray[8].z, textArray[8].scale, textArray[8].index);
+
+        cylinderArray[ 9 ].position.set( 2.62 * multSize, mapLevel, -5.22 * multSize );
+        textArray.push(new Text('J ∞', 2.62 * multSize, -5.22 * multSize, 1, 9));
+        loadFont(textArray[9].text, textArray[9].x, textArray[9].z, textArray[9].scale, textArray[9].index);
+
+        cylinderArray[ 10 ].position.set( 3.55 * multSize, mapLevel, -3.85 * multSize );
+        textArray.push(new Text('K ∞', 3.55 * multSize, -3.85 * multSize, 1, 10));
+        loadFont(textArray[10].text, textArray[10].x, textArray[10].z, textArray[10].scale, textArray[10].index);
+
+        cylinderArray[ 11 ].position.set( 6.2 * multSize, mapLevel, -12.2 * multSize );
+        textArray.push(new Text('L ∞', 6.2 * multSize, -12.2 * multSize, 1, 11));
+        loadFont(textArray[11].text, textArray[11].x, textArray[11].z, textArray[11].scale, textArray[11].index);
+
+        cylinderArray[ 12 ].position.set( -8.9 * multSize, mapLevel, -12.2 * multSize );
+        textArray.push(new Text('M ∞', -8.9 * multSize, -12.2 * multSize, 1, 12));
+        loadFont(textArray[12].text, textArray[12].x, textArray[12].z, textArray[12].scale, textArray[12].index);
+
+        cylinderArray[ 13 ].position.set( -8.9 * multSize, mapLevel, -8.4 * multSize );
+        textArray.push(new Text('N ∞', -8.9 * multSize, -8.4 * multSize, 1, 13));
+        loadFont(textArray[13].text, textArray[13].x, textArray[13].z, textArray[13].scale, textArray[13].index);
+
+        cylinderArray[ 14 ].position.set( -8.9 * multSize, mapLevel, -3.35 * multSize );
+        textArray.push(new Text('O ∞', -8.9 * multSize, -3.35 * multSize, 1, 14));
+        loadFont(textArray[14].text, textArray[14].x, textArray[14].z, textArray[14].scale, textArray[14].index);
+
+        cylinderArray[ 15 ].position.set( -8.77 * multSize, mapLevel, 1.22 * multSize );
+        textArray.push(new Text('P ∞', -8.77 * multSize, 1.22 * multSize, 1, 15));
+        loadFont(textArray[15].text, textArray[15].x, textArray[15].z, textArray[15].scale, textArray[15].index);
+
+        cylinderArray[ 16 ].position.set( -9.3 * multSize, mapLevel, 5.45 * multSize );
+        textArray.push(new Text('Q ∞', -9.3 * multSize, 5.45 * multSize, 1, 16));
+        loadFont(textArray[16].text, textArray[16].x, textArray[16].z, textArray[16].scale, textArray[16].index);
+
+        cylinderArray[ 17 ].position.set( -9.1 * multSize, mapLevel, 11.2 * multSize );
+        textArray.push(new Text('R ∞', -9.1 * multSize, 11.2 * multSize, 1, 17));
+        loadFont(textArray[17].text, textArray[17].x, textArray[17].z, textArray[17].scale, textArray[17].index);
+
+        cylinderArray[ 18 ].position.set( -1.29 * multSize, mapLevel, 10.8 * multSize );
+        textArray.push(new Text('S ∞', -1.29 * multSize, 10.8 * multSize, 1, 18));
+        loadFont(textArray[18].text, textArray[18].x, textArray[18].z, textArray[18].scale, textArray[18].index);
+
+        cylinderArray[ 19 ].position.set( 5.8 * multSize, mapLevel, 8.3 * multSize );
+        textArray.push(new Text('T ∞', 5.8 * multSize, 8.3 * multSize, 1, 19));
+        loadFont(textArray[19].text, textArray[19].x, textArray[19].z, textArray[19].scale, textArray[19].index);
+
+        cylinderArray[ 20 ].position.set( 3.55 * multSize, mapLevel, 5.2 * multSize );
+        textArray.push(new Text('U ∞', 3.55 * multSize, 5.2 * multSize, 1, 20));
+        loadFont(textArray[20].text, textArray[20].x, textArray[20].z, textArray[20].scale, textArray[20].index);
+
+        cylinderArray[ 21 ].position.set( 3.17 * multSize, mapLevel, 2.62 * multSize );
+        textArray.push(new Text('V ∞', 3.17 * multSize, 2.62 * multSize, 1, 21));
+        loadFont(textArray[21].text, textArray[21].x, textArray[21].z, textArray[21].scale, textArray[21].index);
+
+
+        let linematerial;
+
+        let lineGeometryArray = new Array();
+        let lineMathArray = new Array();
+
+        function createLineVector( v1, v2, index, addPoints )
+        {
+          linematerial = new THREE.LineBasicMaterial( {
+            color: 0x0000ff
+          } );
+
+          let numLines = 0;
+
+          let liner = new THREE.Geometry();
+
+          lineGeometryArray[ index ] = new Array();
+          lineMathArray[ index ] = new Array();
+          if ( addPoints != null )
+          {
+            let point1 = new THREE.Vector3( v1.x, 74.8, v1.z );
+            liner.vertices.push(
+              point1
+            );
+
+            let pointsLine = 1;
+            let numPoints = addPoints.length;
+            for ( let i = 0; i < numPoints; i++ )
+            {
+              let point2 = new THREE.Vector3( addPoints[ i ].position.x, 74.8, addPoints[ i ].position.z );
+              liner.vertices.push(
+                point2
+              );
+              pointsLine++;
+              if ( pointsLine == 2 )
+              {
+                lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
+                lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
+                scene.add( lineGeometryArray[ index ][ numLines++ ] );
+                point1 = new THREE.Vector3( addPoints[ i ].position.x, 74.8, addPoints[ i ].position.z );
+                liner.vertices.push(
+                  point1
+                );
+                pointsLine = 1;
+              }
+            }
+            point2 = new THREE.Vector3( v2.x, 74.8, v2.z );
+            liner.vertices.push(
+              point2
+            );
+            pointsLine++;
+
+            if ( pointsLine == 2 ) {
+              lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
+              lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
+              scene.add( lineGeometryArray[ index ][ numLines++ ] );
+              pointsLine = 1;
+            }
+
+          }
+          else
+          {
+            liner.vertices.push(
+              new THREE.Vector3( v1.x, 74.8, v1.z ),
+              new THREE.Vector3( v2.x, 74.8, v2.z )
+            );
+            lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
+            scene.add( lineGeometryArray[ index ][ numLines ] );
+          }
+
+        }
+
+        let numEdges = 0;
+
+        // intermediary nodes
+        let numPerTier = [];
+
+        function createInterNodes( numInt, indexTier )
+        {
+          numPerTier.push( numInt );
+          intermedNodesArray[ indexTier ] = new Array();
+          for ( let i = 0; i < numPerTier[ indexTier ]; i++ )
+          {
+            intermedNodesArray[ indexTier ].push( new THREE.Mesh( cylinderGeometry, intermedMaterial ) );
+            //scene.add( intermedNodesArray[ indexTier ][ i ] );
+          }
+        }
+        createInterNodes( 2, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 1 ].position.x + 3, mapLevel, cylinderArray[ 0 ].position.z + 2 );
+
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 1 ].position.x + 2, mapLevel, cylinderArray[ 1 ].position.z - 0.5 );
+
+        createLineVector( cylinderArray[ 0 ].position, cylinderArray[ 1 ].position, numEdges++, intermedNodesArray[ 0 ] );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 1 ].position.x - 2, mapLevel, cylinderArray[ 1 ].position.z + 0.75 );
+
+        createLineVector( cylinderArray[ 1 ].position, cylinderArray[ 2 ].position, numEdges++, intermedNodesArray[ 1 ] );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 2 ].position, cylinderArray[ 3 ].position, numEdges++ );
+
+        createInterNodes( 3, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 3 ].position.x - 1.8, mapLevel, cylinderArray[ 3 ].position.z - 2.5 );
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 3 ].position.x - 1.5, mapLevel, cylinderArray[ 3 ].position.z - 4 );
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 3 ].position.x - 0.5, mapLevel, cylinderArray[ 3 ].position.z - 5.5 );
+
+        createLineVector( cylinderArray[ 3 ].position, cylinderArray[ 4 ].position, numEdges++, intermedNodesArray[ 3 ] );
+
+        createInterNodes( 4, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 4 ].position.x - 1, mapLevel, cylinderArray[ 4 ].position.z - 2 );
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 4 ].position.x - 1.5, mapLevel, cylinderArray[ 4 ].position.z - 3 );
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 4 ].position.x - 1.5, mapLevel, cylinderArray[ 4 ].position.z - 4 );
+        intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 4 ].position.x + 1, mapLevel, cylinderArray[ 4 ].position.z - 6 );
+
+        createLineVector( cylinderArray[ 4 ].position, cylinderArray[ 5 ].position, numEdges++, intermedNodesArray[ 4 ] );
+
+        createInterNodes( 4, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 5 ].position.x + 1.5, mapLevel, cylinderArray[ 5 ].position.z + 1.2 );
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 5 ].position.x + 2.7, mapLevel, cylinderArray[ 5 ].position.z + 1.5 );
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 5 ].position.x + 4, mapLevel, cylinderArray[ 5 ].position.z + 1.3 );
+        intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 5 ].position.x + 7, mapLevel, cylinderArray[ 5 ].position.z + 0.5 );
+
+        createLineVector( cylinderArray[ 5 ].position, cylinderArray[ 6 ].position, numEdges++, intermedNodesArray[ 5 ] );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 6 ].position, cylinderArray[ 7 ].position, numEdges++ );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 7 ].position.x + 1, mapLevel, cylinderArray[ 7 ].position.z + 1 );
+
+        createLineVector( cylinderArray[ 7 ].position, cylinderArray[ 8 ].position, numEdges++, intermedNodesArray[ 7 ] );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 8 ].position, cylinderArray[ 9 ].position, numEdges++ );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 8 ].position.x + 2, mapLevel, cylinderArray[ 9 ].position.z + 1.5 );
+
+        createLineVector( cylinderArray[ 9 ].position, cylinderArray[ 10 ].position, numEdges++, intermedNodesArray[ 9 ] );
+
+        createInterNodes( 2, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 10 ].position.x + 0.4, mapLevel, cylinderArray[ 10 ].position.z + 2 );
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 10 ].position.x - 0.3, mapLevel, cylinderArray[ 10 ].position.z + 4 );
+
+        createLineVector( cylinderArray[ 10 ].position, cylinderArray[ 0 ].position, numEdges++, intermedNodesArray[ 10 ] );
+
+        createInterNodes( 8, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 11 ].position.x - 3, mapLevel, cylinderArray[ 8 ].position.z - 1.5 );
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 11 ].position.x + 0.5, mapLevel, cylinderArray[ 8 ].position.z - 1.8 );
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 11 ].position.x + 2, mapLevel, cylinderArray[ 8 ].position.z - 2.5 );
+        intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 11 ].position.x + 2.8, mapLevel, cylinderArray[ 8 ].position.z - 4 );
+        intermedNodesArray[ numEdges ][ 4 ].position.set( cylinderArray[ 11 ].position.x + 2.4, mapLevel, cylinderArray[ 8 ].position.z - 5.5 );
+        intermedNodesArray[ numEdges ][ 5 ].position.set( cylinderArray[ 11 ].position.x + 1.5, mapLevel, cylinderArray[ 8 ].position.z - 7 );
+        intermedNodesArray[ numEdges ][ 6 ].position.set( cylinderArray[ 11 ].position.x + 0.5, mapLevel, cylinderArray[ 8 ].position.z - 8.8 );
+
+        intermedNodesArray[ numEdges ][ 7 ].position.set( cylinderArray[ 11 ].position.x, mapLevel, cylinderArray[ 11 ].position.z + 1.5 );
+
+        createLineVector( cylinderArray[ 8 ].position, cylinderArray[ 11 ].position, numEdges++, intermedNodesArray[ 11 ] );
+
+
+        createInterNodes( 4, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 7 ].position.x + 3, mapLevel, cylinderArray[ 7 ].position.z - 4.8 );
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 7 ].position.x + 5.5, mapLevel, cylinderArray[ 7 ].position.z - 6.4 );
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 7 ].position.x + 5.5, mapLevel, cylinderArray[ 7 ].position.z - 7.7 );
+        intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 7 ].position.x + 9, mapLevel, cylinderArray[ 7 ].position.z - 8 );
+
+        createLineVector( cylinderArray[ 7 ].position, cylinderArray[ 11 ].position, numEdges++, intermedNodesArray[ 12 ] );
+
+        createInterNodes( 4, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 6 ].position.x + 3.2, mapLevel, cylinderArray[ 6 ].position.z - 6.4 );
+
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 6 ].position.x + 5.5, mapLevel, cylinderArray[ 6 ].position.z - 7.3 );
+
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 6 ].position.x + 7.8, mapLevel, cylinderArray[ 6 ].position.z - 7.3 );
+        intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 6 ].position.x + 11.3, mapLevel, cylinderArray[ 6 ].position.z - 7.6 );
+
+        createLineVector( cylinderArray[ 6 ].position, cylinderArray[ 11 ].position, numEdges++, intermedNodesArray[ 13 ] );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 11 ].position, cylinderArray[ 12 ].position, numEdges++ );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 12 ].position, cylinderArray[ 13 ].position, numEdges++ );
+
+        createInterNodes( 2, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 13 ].position.x + 5, mapLevel, cylinderArray[ 13 ].position.z );
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 13 ].position.x + 7, mapLevel, cylinderArray[ 13 ].position.z + 0.5 );
+
+        createLineVector( cylinderArray[ 13 ].position, cylinderArray[ 5 ].position, numEdges++, intermedNodesArray[ 16 ] );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 13 ].position, cylinderArray[ 14 ].position, numEdges++ );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 14 ].position, cylinderArray[ 4 ].position, numEdges++ );
+
+        createInterNodes( 0, numEdges );
+
+        createLineVector( cylinderArray[ 14 ].position, cylinderArray[ 15 ].position, numEdges++ );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 15 ].position.x + 2, mapLevel, cylinderArray[ 15 ].position.z - 1 );
+
+        createLineVector( cylinderArray[ 15 ].position, cylinderArray[ 3 ].position, numEdges++, intermedNodesArray[ 20 ] );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 15 ].position.x, mapLevel, cylinderArray[ 15 ].position.z + 5 );
+
+        createLineVector( cylinderArray[ 15 ].position, cylinderArray[ 16 ].position, numEdges++, intermedNodesArray[ 21 ] );
+
+        createInterNodes( 2, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 16 ].position.x + 4, mapLevel, cylinderArray[ 16 ].position.z );
+
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 16 ].position.x + 5.9, mapLevel, cylinderArray[ 16 ].position.z - 1.5 );
+
+        createLineVector( cylinderArray[ 16 ].position, cylinderArray[ 2 ].position, numEdges++, intermedNodesArray[ 22 ] );
+
+        createInterNodes( 3, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 16 ].position.x - 0.8, mapLevel, cylinderArray[ 16 ].position.z + 2.5 );
+
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 16 ].position.x - 1.2, mapLevel, cylinderArray[ 16 ].position.z + 5 );
+
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 16 ].position.x - 1, mapLevel, cylinderArray[ 16 ].position.z + 8 );
+
+        createLineVector( cylinderArray[ 16 ].position, cylinderArray[ 17 ].position, numEdges++, intermedNodesArray[ 23 ] );
+
+        createInterNodes( 4, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 17 ].position.x + 6, mapLevel, cylinderArray[ 17 ].position.z - 1.3 );
+
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 17 ].position.x + 8, mapLevel, cylinderArray[ 17 ].position.z - 2.1 );
+
+        intermedNodesArray[ numEdges ][ 2 ].position.set( cylinderArray[ 17 ].position.x + 10, mapLevel, cylinderArray[ 17 ].position.z - 3.2 );
+
+        intermedNodesArray[ numEdges ][ 3 ].position.set( cylinderArray[ 17 ].position.x + 13, mapLevel, cylinderArray[ 17 ].position.z - 2.8 );
+
+        createLineVector( cylinderArray[ 17 ].position, cylinderArray[ 18 ].position, numEdges++, intermedNodesArray[ 24 ] );
+
+        createInterNodes( 2, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 18 ].position.x + 3.5, mapLevel, cylinderArray[ 17 ].position.z + 0.1 );
+
+        intermedNodesArray[ numEdges ][ 1 ].position.set( cylinderArray[ 18 ].position.x + 6.5, mapLevel, cylinderArray[ 17 ].position.z - 0.8 );
+
+        createLineVector( cylinderArray[ 18 ].position, cylinderArray[ 19 ].position, numEdges++, intermedNodesArray[ 25 ] );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 19 ].position.x - 0.5, mapLevel, cylinderArray[ 19 ].position.z - 4 );
+
+        createLineVector( cylinderArray[ 19 ].position, cylinderArray[ 20 ].position, numEdges++, intermedNodesArray[ 26 ] );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 20 ].position.x - 0.9, mapLevel, cylinderArray[ 20 ].position.z - 2.4 );
+
+        createLineVector( cylinderArray[ 20 ].position, cylinderArray[ 21 ].position, numEdges++, intermedNodesArray[ 27 ] );
+
+        createInterNodes( 1, numEdges );
+
+        intermedNodesArray[ numEdges ][ 0 ].position.set( cylinderArray[ 21 ].position.x - 0.5, mapLevel, cylinderArray[ 21 ].position.z - 3 );
+
+        createLineVector( cylinderArray[ 21 ].position, cylinderArray[ 0 ].position, numEdges++, intermedNodesArray[ 28 ] );
+
+        function Edge( length, lines )
+        {
+          this.length = length;
+          this.lines = lines;
+        }
+
+        var _ = Infinity;
+
+        var adjacencies = [
+          //  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
+          [ _, 0, _, _, _, _, _, _, _, _, 10, _, _, _, _, _, _, _, _, _, _, 28 ], //0
+          [ 0, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ], //1
+          [ _, 1, _, 2, _, _, _, _, _, _, _, _, _, _, _, _,22, _, _, _, _, _ ], //2
+          [ _, _, 2, _, 3, _, _, _, _, _, _, _, _, _, _, 20, _, _, _, _, _, _ ], //3
+          [ _, _, _, 3, _, 4, _, _, _, _, _, _, _, _, 18, _, _, _, _, _, _, _ ], //4
+          [ _, _, _, _, 4, _, 5, _, _, _, _, _, _, 16, _, _, _, _, _, _, _, _ ], //5
+          [ _, _, _, _, _, 5, _, 6, _, _, _, 13, _, _, _, _, _, _, _, _, _, _ ], //6
+          [ _, _, _, _, _, _, 6, _, 7, _, _, 12, _, _, _, _, _, _, _, _, _, _ ], //7
+          [ _, _, _, _, _, _, _, 7, _, 8, _, 11, _, _, _, _, _, _, _, _, _, _ ], //8
+          [ _, _, _, _, _, _, _, _, 8, _, 9, _, _, _, _, _, _, _, _, _, _, _ ], //9
+          [ 10, _, _, _, _, _, _, _, _, 9, _, _, _, _, _, _, _, _, _, _, _, _ ], //10
+          [ _, _, _, _, _, _,13,12,11, _, _, _, 14, _, _, _, _, _, _, _, _, _ ], //11
+          [ _, _, _, _, _, _, _, _, _, _, _, 14, _, 15, _, _, _, _, _, _, _, _ ], //12
+          [ _, _, _, _, _, 16, _, _, _, _, _, _, 15, _, 17, _, _, _, _, _, _, _ ], //13
+          [ _, _, _, _, 18, _, _, _, _, _, _, _, _, 17, _, 19, _, _, _, _, _, _ ], //14
+          [ _, _, _, 20, _, _, _, _, _, _, _, _, _, _, 19, _, 21, _, _, _, _, _ ], //15
+          [ _, _, 22, _, _, _, _, _, _, _, _, _, _, _, _, 21, _, 23, _, _, _, _ ], //16
+          [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 23, _, 24, _, _, _ ], //17
+          [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 24, _, 25, _, _ ], //18
+          [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 25, _, 26, _ ], //19
+          [ _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 26, _, 27 ], //20
+          [ 28, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 27, _ ] //21
+        ];
+
+        var edgeMatrix = [ ...Array( adjacencies.length ) ].map( e => Array( adjacencies.length ) );
+
+
+        for ( i = 0; i < adjacencies.length; i++ )
+        {
+          for ( j = 0; j < adjacencies[ 0 ].length; j++ )
+          {
+            if ( adjacencies[ i ][ j ] != Infinity )
+            {
+              edgeMatrix[ i ][ j ] = new Edge( cylinderArray[ i ].position.distanceTo( cylinderArray[ j ].position ), lineGeometryArray[ adjacencies[ i ][ j ] ] );
+              //edgeMatrix[j][i] = edgeMatrix[i][j];
+            }
+            else
+              edgeMatrix[ i ][ j ] = new Edge( Infinity, new Array() );
+          }
+        }
+
+        function colorChange( index, color )
+        {
+          lineGeometryArray[ index ].forEach( function( line ) {
+            line.material.color = new THREE.Color( color );
+            line.material.needsUpdate = true;
+            render();
+          } );
+        };
+
+
+        function sleep( ms )
+        {
+          return new Promise( resolve => setTimeout( resolve, ms ) );
+        }
+
+        /* index -> letter
+         * concatinate letter + weight -> 'letter weight'
+         * loadFont('letter weight', textArray[index].x, textArray[index].z, textArray[index].scale, index);
+         */
+
+        function updatePathLength(index, pathLength)
+        {
+        	var letter = String.fromCharCode(0 + + "A".charCodeAt(0) + + index);
+        	if (pathLength !=Infinity)
+          {
+        		loadFont(letter + " " + pathLength, textArray[index].x, textArray[index].z, textArray[index].scale, index);
+        	}
+        	else
+          {
+        		loadFont(letter + " " + "∞", textArray[index].x, textArray[index].z, textArray[index].scale, index);
+        	}
+        }
+
+        async function shortestPath( edges, numVertices, startVertex, endVertex, adj, speed )
+        {
+
+          var done = new Array( numVertices );
+          done[ startVertex ] = true;
+          var pathLengths = new Array( numVertices );
+          var predecessors = new Array( numVertices );
+
+
+      	  // The distance from the start node to itself is always 0
+          pathLengths[ startVertex ] = 0;
+        	//console.log(startVertex);
+        	updatePathLength(startVertex, parseInt(pathLengths[startVertex]));
+        	changeTColor(startVertex, 0x000fff);
+        	await sleep( 1000 / speed );
+        	changeTColor(startVertex, 0x000000);
+
+          for ( var i = 0; i < numVertices; i++ )
+          {
+            // If there is an edge between the starting vertex and this vertex, set the shortest path equal to that path length
+            pathLengths[ i ] = edges[ startVertex ][ i ].length;
+
+            // If we do, set the parent of the end node to the start node
+            if ( edges[ startVertex ][ i ].length != Infinity )
+            {
+              // Pause here and light up edges[startVertex][i]
+              colorChange( adj[ startVertex ][ i ], 0xff0000 );
+              // Light up pathLengths[i]
+
+      		updatePathLength(i, parseInt(pathLengths[i]));
+      		changeTColor(i, 0x000fff);
+      		await sleep( 1000 / speed );
+      		changeTColor(i, 0x000000);
+
+
+              //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
+              await sleep( 1000 / speed );
+              colorChange(adj[startVertex][i], 0x0000ff);
+
+
+              predecessors[ i ] = startVertex;
+
+
+            }
+          }
+
+
+
+
+          for ( var i = 0; i < numVertices - 1; i++ )
+          {
+            var closest = -1;
+            var closestDistance = Infinity;
+            for ( var j = 0; j < numVertices; j++ )
+            {
+              // If we haven't yet looked at this node and the path length currently
+              // stored is smaller than the closestDistance
+              if ( !done[ j ] && pathLengths[ j ] < closestDistance )
+              {
+                // The new closest distance is the current path length
+                closestDistance = pathLengths[ j ];
+
+                // j is the closest node
+                closest = j;
+              }
+            }
+
+            //TODO: update value of weight at node
+
+            // PAUSE: light up edges[predecessor[closest]][closest]
+            var temp = closest;
+            while ( temp != startVertex )
+            {
+              //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
+              colorChange( adj[ predecessors[ temp ] ][ temp ], 0xff0000 );
+              temp = predecessors[ temp ];
+            }
+
             await sleep( 1000 / speed );
 
+            // we've looked at the closest node
+            done[ closest ] = true;
+
+            if ( closest == endVertex)
+            {
+      			  //console.log("We found the end vertex!");
+              break;
+            }
+
+
+            for ( var j = 0; j < numVertices; j++ )
+            {
+
+              // If we haven't looked at this node yet
+              if ( !done[ j ] )
+              {
+
+                // Take the current closest path length and add the edge between the
+                // closest node and this one
+                var possiblyCloserDistance = pathLengths[ closest ] + edges[ closest ][ j ].length;
+
+                // PAUSE: light up edges[closest][j]
+                if ( edges[ closest ][ j ].length != Infinity )
+                {
+                  colorChange( adj[ closest ][ j ], 0xff0000 );
+                  //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
+                  await sleep( 1000 / speed );
+
+
+                }
+
+                // If this distance is shorter than the current stored path length
+                if ( possiblyCloserDistance < pathLengths[ j ] )
+                {
+
+                  // Replace the path length with the shorter one and set the parent of this node to the closest node
+
+                  // PAUSE: light up pathlength[j]
+                  //console.log( "Changing shortest pathlength of " + j + " from " + pathLengths[ j ] + " to " + possiblyCloserDistance );
+
+                  // unlight edges[closest][j] and pathlength[j]
+                  pathLengths[ j ] = possiblyCloserDistance;
+                  predecessors[ j ] = closest;
+
+            			updatePathLength(j, parseInt(pathLengths[j]));
+            			changeTColor(j, 0x000fff);
+            			await sleep( 1000 / speed );
+            			changeTColor(j, 0x000000);
+                }
+          		  if ( edges[ closest ][ j ].length != Infinity )
+                {
+          			colorChange( adj[ closest ][ j ], 0x0000ff );
+          			//console.log("Current j: " + j + " and Current endVertex = " + endVertex);
+          		  }
+              }
+            }
+
+            // POTENTIAL PAUSE: light up red pathlengths[closest] to mark it done
+
+            temp = closest;
+            while ( temp != startVertex )
+            {
+              //    UNlight up temp[predecessor[temp]][temp]
+              //console.log( adj[ predecessors[ temp ] ][ temp ] );
+              colorChange( adj[ predecessors[ temp ] ][ temp ], 0x0000ff );
+              temp = predecessors[ temp ];
+            }
 
           }
 
-          // If this distance is shorter than the current stored path length
-          if ( possiblyCloserDistance < pathLengths[ j ] )
-          {
+          constructPath( {
+            "startVertex": startVertex,
+            "pathLengths": pathLengths,
+            "predecessors": predecessors
+          }, endVertex );
 
-            // Replace the path length with the shorter one and set the parent of this node to the closest node
 
-            // PAUSE: light up pathlength[j]
-            //console.log( "Changing shortest pathlength of " + j + " from " + pathLengths[ j ] + " to " + possiblyCloserDistance );
+          isRunning = false;
 
-            // unlight edges[closest][j] and pathlength[j]
-            pathLengths[ j ] = possiblyCloserDistance;
-            predecessors[ j ] = closest;
-			
-			updatePathLength(j, parseInt(pathLengths[j]));
-			changeTColor(j, 0x000fff);
-			await sleep( 1000 / speed );
-			changeTColor(j, 0x000000);
-          }
-    		  if ( edges[ closest ][ j ].length != Infinity )
-          {
-    			colorChange( adj[ closest ][ j ], 0x0000ff );
-    			//console.log("Current j: " + j + " and Current endVertex = " + endVertex);
-    		  }
+          return {
+            "startVertex": startVertex,
+            "pathLengths": pathLengths,
+            "predecessors": predecessors
+          };
         }
+
+        function constructPath( shortestPathInfo, endVertex ) {
+          // Empty array to store our path from start to end node
+          var path = [];
+
+          // We must work backwards from the end node and through the parents of the nodes
+          // to construct the path
+          while ( endVertex != shortestPathInfo.startVertex ) {
+            // Unshift just adds the element to the beginning of the array
+            path.unshift( endVertex );
+
+            // Light up edges[predecessors[endVertex][endVertex]
+
+
+            // Once we've added the current node, we move on to the parent node
+            endVertex = shortestPathInfo.predecessors[ endVertex ];
+          }
+
+          //console.log( path );
+
+          return path;
+        }
+
+
+        plane.position.set( 0, 74.6, 0 );
+        floorplane.rotation.x = Math.PI / 2;
+        floorplane.rotation.z = Math.PI;
+        floorplane.rotation.y = Math.PI;
+        floorplane.position.set( 5, -1, 0 );
+        scene.add( floorplane );
+
+
+        render();
+
+        let resize = function() {
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          render();
+        };
+
+        //console.log(lineMathArray[0][0].distance());
+
+        //colorChange(0, 0xff0000);
+        var shortestPathInfo;
+
+        var values = {startingNode: 0, endingNode: 10, speed: 1};
+        var isRunning = false;
+        var gui = new dat.GUI();
+        gui.add(values, "startingNode",
+      	   {A : "0", B: "1", C: "2", D: "3", E: "4", F: "5", G: "6", H: "7", I: "8", J: "9", K: "10", L: "11", M: "12", N: "13", O: "14", P: "15", Q: "16", R: "17", S: "18", T: "19", U: "20", V: "21"} )
+      	    .name( "Starting Node" );
+
+        gui.add(values, "endingNode",
+      	    {A : "0", B: "1", C: "2", D: "3", E: "4", F: "5", G: "6", H: "7", I: "8", J: "9", K: "10", L: "11", M: "12", N: "13", O: "14", P: "15", Q: "16", R: "17", S: "18", T: "19", U: "20", V: "21"} )
+      	    .name( "Ending Node" );
+
+        gui.add(values, 'speed', 0.5, 5, 0.1).name( "Speed" );
+
+        var button = { Start:function(){
+        	//console.log("start clicked")
+        	if (!isRunning){
+        		isRunning = true;
+        		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies, values.speed );
+          }
+
+        }};
+        gui.add(button,'Start');
+
+
+        var button2 = { Clear:function(){
+        	//console.log("clear clicked")
+        	if (!isRunning){
+
+        		for (var i = 0; i < 22; i++) {
+      			updatePathLength(i, Infinity);
+        			for (var j = 0; j < 22; j++){
+        				if (adjacencies[ i][ j ] != Infinity) {
+        					colorChange( adjacencies[ i][ j ], 0x0000ff );
+        				}
+        			}
+        		}
+
+          }
+
+        }};
+        gui.add(button2,'Clear');
+
+        //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
+
+        //console.log( shortestPathInfo );
+
+        window.addEventListener( "resize", resize, false )
       }
-
-      // POTENTIAL PAUSE: light up red pathlengths[closest] to mark it done
-
-      temp = closest;
-      while ( temp != startVertex ) {
-        //    UNlight up temp[predecessor[temp]][temp]
-        //console.log( adj[ predecessors[ temp ] ][ temp ] );
-        colorChange( adj[ predecessors[ temp ] ][ temp ], 0x0000ff );
-        temp = predecessors[ temp ];
-      }
-
-    }
-
-    constructPath( {
-      "startVertex": startVertex,
-      "pathLengths": pathLengths,
-      "predecessors": predecessors
-    }, endVertex );
-
-
-    isRunning = false;
-
-    return {
-      "startVertex": startVertex,
-      "pathLengths": pathLengths,
-      "predecessors": predecessors
-    };
-  }
-
-  function constructPath( shortestPathInfo, endVertex ) {
-    // Empty array to store our path from start to end node
-    var path = [];
-
-    // We must work backwards from the end node and through the parents of the nodes
-    // to construct the path
-    while ( endVertex != shortestPathInfo.startVertex ) {
-      // Unshift just adds the element to the beginning of the array
-      path.unshift( endVertex );
-
-      // Light up edges[predecessors[endVertex][endVertex]
-
-
-      // Once we've added the current node, we move on to the parent node
-      endVertex = shortestPathInfo.predecessors[ endVertex ];
-    }
-
-    //console.log( path );
-
-    return path;
-  }
-
-
-  plane.position.set( 0, 74.6, 0 );
-  floorplane.rotation.x = Math.PI / 2;
-  floorplane.rotation.z = Math.PI;
-  floorplane.rotation.y = Math.PI;
-  floorplane.position.set( 5, -1, 0 );
-  scene.add( floorplane );
-
-
-  render();
-
-  let resize = function() {
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    render();
-  };
-
-  //console.log(lineMathArray[0][0].distance());
-
-  //colorChange(0, 0xff0000);
-  var shortestPathInfo;
-
-  var values = {startingNode: 0, endingNode: 10, speed: 1};
-  var isRunning = false;
-  var gui = new dat.GUI();
-  gui.add(values, "startingNode",
-	   {A : "0", B: "1", C: "2", D: "3", E: "4", F: "5", G: "6", H: "7", I: "8", J: "9", K: "10", L: "11", M: "12", N: "13", O: "14", P: "15", Q: "16", R: "17", S: "18", T: "19", U: "20", V: "21"} )
-	    .name( "Starting Node" );
-
-  gui.add(values, "endingNode",
-	    {A : "0", B: "1", C: "2", D: "3", E: "4", F: "5", G: "6", H: "7", I: "8", J: "9", K: "10", L: "11", M: "12", N: "13", O: "14", P: "15", Q: "16", R: "17", S: "18", T: "19", U: "20", V: "21"} )
-	    .name( "Ending Node" );
-
-  gui.add(values, 'speed', 0.5, 5, 0.1).name( "Speed" );
-
-  var button = { Start:function(){
-  	//console.log("start clicked")
-  	if (!isRunning){
-  		isRunning = true;
-  		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies, values.speed );
-    }
-
-  }};
-  gui.add(button,'Start');
-
-
-  var button2 = { Clear:function(){
-  	//console.log("clear clicked")
-  	if (!isRunning){
-
-  		for (var i = 0; i < 22; i++) {
-			updatePathLength(i, Infinity);
-  			for (var j = 0; j < 22; j++){
-  				if (adjacencies[ i][ j ] != Infinity) {
-  					colorChange( adjacencies[ i][ j ], 0x0000ff );
-  				}
-  			}
-  		}
-
-    }
-
-  }};
-  gui.add(button2,'Clear');
-
-  //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
-
-  //console.log( shortestPathInfo );
-
-  window.addEventListener( "resize", resize, false )
-}
 
     </script>
   </head>
   <body onload="mainFunction();">
-  <h1>Knightly Commute</h1>
+    <h1>Knightly Commute</h1>
   </body>
 </html>
