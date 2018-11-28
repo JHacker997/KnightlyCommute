@@ -57,9 +57,9 @@
         let envLoader = new THREE.CubeTextureLoader();
         envLoader.setPath( "./cubeMap/" );
         let textureCube = envLoader.load( [
-          "px.png", "nx.png",
-          "py.png", "ny.png",
-          "pz.png", "nz.png"
+          "posx.jpg", "negx.jpg",
+          "posy.jpg", "negy.jpg",
+          "posz.jpg", "negz.jpg"
         ] );
         scene.background = textureCube;
 
@@ -92,18 +92,24 @@
         let material = new THREE.MeshLambertMaterial( {
           map: texture
         } );
-        let wood = new THREE.TextureLoader().load( "./woodTex.png" );
-        let floorMaterial = new THREE.MeshLambertMaterial( {
-          side: THREE.DoubleSide,
-          map: wood
-        } );
         let plane = new THREE.Mesh( new THREE.PlaneGeometry( 21.6 * multSize, 28.275 * multSize ), material );
-        let floorplane = new THREE.Mesh( new THREE.PlaneGeometry( 400, 200 ), floorMaterial );
+        plane.position.set( 0, mapLevel, 0 );
         plane.rotation.x = Math.PI / 2;
         plane.rotation.z = Math.PI;
         plane.rotation.y = Math.PI;
-
         scene.add( plane );
+
+        // let wood = new THREE.TextureLoader().load( "./woodTex.png" );
+        // let floorMaterial = new THREE.MeshLambertMaterial( {
+        //   side: THREE.DoubleSide,
+        //   map: wood
+        // } );
+        // let floorplane = new THREE.Mesh( new THREE.PlaneGeometry( 400, 200 ), floorMaterial );
+        // floorplane.rotation.x = Math.PI / 2;
+        // floorplane.rotation.z = Math.PI;
+        // floorplane.rotation.y = Math.PI;
+        // floorplane.position.set( 5, -1, 0 );
+        // scene.add( floorplane );
 
         /*
          * Show text on map.
@@ -894,15 +900,6 @@
 
           return path;
         }
-
-
-        plane.position.set( 0, 74.6, 0 );
-        floorplane.rotation.x = Math.PI / 2;
-        floorplane.rotation.z = Math.PI;
-        floorplane.rotation.y = Math.PI;
-        floorplane.position.set( 5, -1, 0 );
-        scene.add( floorplane );
-
 
         render();
 
