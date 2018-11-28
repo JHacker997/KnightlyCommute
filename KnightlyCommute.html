@@ -17,7 +17,7 @@
 
       const baseColor = 0x595959;
       const textColor = 0x000000;
-      const highlightColor = 0xac00e6;
+      const highlightColor = 0xffffff;
 	  const nodeBaseColor = 0x990000;
 	  const nodeHighlightColor = 0xac00e6;
 
@@ -38,7 +38,7 @@
           color: new THREE.Color(baseColor)
         });
 
-        
+
 
         let scene = new THREE.Scene();
 
@@ -160,7 +160,7 @@
           text.scale.x = scale;
           text.scale.y = scale;
           text.scale.z = .25;
-          text.castShadow = true;
+          //text.castShadow = true;
       	  if (i == 6)
           {
             text.position.z -= zOff + .75;
@@ -653,21 +653,21 @@
             transparent: true,
             color: new THREE.Color(color)
           });
-		  
+
           lineGeometryArray[ index ].forEach( function( line ) {
             line.material = materialLineHighlight;
             line.material.needsUpdate = true;
             render();
           } );
         };
-		
+
 		function nodeColorChange( index, colour )
         {
 
           let nodeMaterial = new THREE.MeshLambertMaterial( {
           color: colour
 		  } );
-		  
+
           cylinderArray[index].material = nodeMaterial
           render();
         };
@@ -724,9 +724,9 @@
             {
               // Pause here and light up edges[startVertex][i]
 			  nodeColorChange(i, nodeHighlightColor);
-              colorChange( adj[ startVertex ][ i ], highlightColor );
+              colorChange( adj[ startVertex ][ i ], nodeHighlightColor );
               // Light up pathLengths[i]
-			  
+
 			await sleep( 1000 / values.speed );
 			updatePathLength(i, parseInt(pathLengths[i]));
       		changeTColor(i, highlightColor);
@@ -775,13 +775,13 @@
             while ( temp != startVertex )
             {
               //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
-              colorChange( adj[ predecessors[ temp ] ][ temp ], highlightColor );
+              colorChange( adj[ predecessors[ temp ] ][ temp ], nodeHighlightColor );
 			  nodeColorChange(temp, nodeHighlightColor);
               temp = predecessors[ temp ];
             }
 
             await sleep( 1000 / values.speed );
-			
+
 
             // we've looked at the closest node
             done[ closest ] = true;
@@ -808,7 +808,7 @@
                 if ( edges[ closest ][ j ].length != Infinity )
                 {
 				  nodeColorChange(j, nodeHighlightColor);
-                  colorChange( adj[ closest ][ j ], highlightColor );
+                  colorChange( adj[ closest ][ j ], nodeHighlightColor );
                   //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
                   await sleep( 1000 / values.speed );
 
