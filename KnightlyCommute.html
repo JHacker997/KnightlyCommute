@@ -48,7 +48,8 @@
         camera.position.z = 5;
         scene.add( camera );
 
-        let light = new THREE.PointLight( 0xffffff, 1, 100 );
+        let light = new THREE.SpotLight( 0xffffff, 1, 100 );
+        light.castShadow = true;
         light.position.set( 0, 100, 1 );
         scene.add( light );
         let ambient = new THREE.AmbientLight( 0xffffff, 0.3 );
@@ -84,12 +85,13 @@
             obj.rotation.x = -Math.PI / 2;
             obj.rotation.z = Math.PI / 2;
             scene.add( obj );
+            light.target = obj;
             render();
           } );
         } );
 
         let texture = THREE.ImageUtils.loadTexture( "mapper.png" );
-        let material = new THREE.MeshLambertMaterial( {
+        let material = new THREE.MeshPhongMaterial( {
           map: texture
         } );
         let wood = new THREE.TextureLoader().load( "./woodTex.png" );
@@ -964,6 +966,31 @@
         //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
 
         //console.log( shortestPathInfo );
+
+        let mtlLampLoader = new THREE.MTLLoader();
+
+        mtlLampLoader.load( "./lamp/lamp_bronze.mtl", function( materials ) {
+          materials.preload();
+
+          let objLampLoader = new THREE.OBJLoader();
+          objLampLoader.setMaterials( materials );
+          objLampLoader.load( "./lamp/lamp_bronze.obj", function( obj ) {
+            obj.position.y = 76;
+            obj.position.x = 50;
+            obj.rotation.y = - Math.PI/2;
+            scene.add( obj );
+            render();
+          } );
+        } );
+
+        let testLightSphereGeometry = new THREE.SphereGeometry(5, 5, 5);
+        let sphereMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
+        let sphere = new THREE.Mesh(testLightSphereGeometry, sphereMaterial);
+        //scene.add(sphere);
+        light.position.set(5, 76+45, 1);
+        light.angle = 1.2 * Math.PI / 6;
+        light.penumbra = 0.8;
+        light.distance = 130;
 
         window.addEventListener( "resize", resize, false )
       }
