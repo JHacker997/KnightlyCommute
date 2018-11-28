@@ -654,7 +654,7 @@
         	}
         }
 
-        async function shortestPath( edges, numVertices, startVertex, endVertex, adj, speed )
+        async function shortestPath( edges, numVertices, startVertex, endVertex, adj )
         {
 
           var done = new Array( numVertices );
@@ -668,7 +668,7 @@
         	//console.log(startVertex);
         	updatePathLength(startVertex, parseInt(pathLengths[startVertex]));
         	changeTColor(startVertex, 0x000fff);
-        	await sleep( 1000 / speed );
+        	await sleep( 1000 / values.speed );
         	changeTColor(startVertex, 0x000000);
 
           for ( var i = 0; i < numVertices; i++ )
@@ -685,12 +685,12 @@
 
       		updatePathLength(i, parseInt(pathLengths[i]));
       		changeTColor(i, 0x000fff);
-      		await sleep( 1000 / speed );
+      		await sleep( 1000 / values.speed );
       		changeTColor(i, 0x000000);
 
 
               //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
-              await sleep( 1000 / speed );
+              await sleep( 1000 / values.speed );
               colorChange(adj[startVertex][i], 0x0000ff);
 
 
@@ -732,7 +732,7 @@
               temp = predecessors[ temp ];
             }
 
-            await sleep( 1000 / speed );
+            await sleep( 1000 / values.speed );
 
             // we've looked at the closest node
             done[ closest ] = true;
@@ -760,7 +760,7 @@
                 {
                   colorChange( adj[ closest ][ j ], 0xff0000 );
                   //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
-                  await sleep( 1000 / speed );
+                  await sleep( 1000 / values.speed );
 
 
                 }
@@ -780,7 +780,7 @@
 
             			updatePathLength(j, parseInt(pathLengths[j]));
             			changeTColor(j, 0x000fff);
-            			await sleep( 1000 / speed );
+            			await sleep( 1000 / values.speed );
             			changeTColor(j, 0x000000);
                 }
           		  if ( edges[ closest ][ j ].length != Infinity )
@@ -882,7 +882,7 @@
         	//console.log("start clicked")
         	if (!isRunning){
         		isRunning = true;
-        		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies, values.speed );
+        		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies);
           }
 
         }};
