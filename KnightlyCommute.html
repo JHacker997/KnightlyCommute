@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Knightly Commute</title>
+
     <script src= "https://threejs.org/build/three.js"> </script>
     <script src= "https://threejs.org/examples/js/controls/OrbitControls.js"> </script>
     <script src= "https://threejs.org/examples/js/libs/dat.gui.min.js"> </script>
@@ -40,8 +41,6 @@
           transparent: true,
           color: new THREE.Color(edgeBaseColor)
         });
-
-
 
         let scene = new THREE.Scene();
 
@@ -189,9 +188,9 @@
         //hex value for ncolor
         function changeTColor(index, ncolor)
         {
-      	//console.log(texts[index]);
+      	  //console.log(texts[index]);
           texts[index].material = new THREE.MeshLambertMaterial({color: ncolor})
-      	render();
+      	  render();
         }
 
         let cylinderGeometry = new THREE.CylinderGeometry( 0.2 * multSize, 0.2 * multSize, 2 * multSize );
@@ -672,12 +671,12 @@
           } );
         };
 
-		function nodeColorChange( index, colour )
+		    function nodeColorChange( index, colour )
         {
 
           let nodeMaterial = new THREE.MeshLambertMaterial( {
           color: colour
-		  } );
+		      } );
 
           cylinderArray[index].material = nodeMaterial
           render();
@@ -734,31 +733,24 @@
             if ( edges[ startVertex ][ i ].length != Infinity )
             {
               // Pause here and light up edges[startVertex][i]
-			  nodeColorChange(i, nodeHighlightColor);
+			        nodeColorChange(i, nodeHighlightColor);
               colorChange( adj[ startVertex ][ i ], edgeHighlightColor );
               // Light up pathLengths[i]
 
-			await sleep( 1000 / values.speed );
-			updatePathLength(i, parseInt(pathLengths[i]));
+    			await sleep( 1000 / values.speed );
+    			updatePathLength(i, parseInt(pathLengths[i]));
       		changeTColor(i, textHighlightColor);
       		await sleep( 1000 / values.speed );
       		changeTColor(i, textBaseColor);
-			nodeColorChange(i, nodeBaseColor);
-
+    			nodeColorChange(i, nodeBaseColor);
 
               //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
               await sleep( 1000 / values.speed );
               colorChange(adj[startVertex][i], edgeBaseColor);
 
-
               predecessors[ i ] = startVertex;
-
-
             }
           }
-
-
-
 
           for ( var i = 0; i < numVertices - 1; i++ )
           {
@@ -963,7 +955,7 @@
 
         }};
 
-        gui.add(button,'Start');      
+        gui.add(button,'Start');
         gui.add(button2,'Clear');
 
         //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
@@ -991,7 +983,7 @@
         let sphere = new THREE.Mesh(testLightSphereGeometry, sphereMaterial);
         //scene.add(sphere);
         light.position.set(5, 76+45, 1);
-        light.angle = 1.2 * Math.PI / 6;
+        light.angle = 1.2 * Math.PI / 4;
         light.penumbra = 0.8;
         light.distance = 130;
 
