@@ -15,11 +15,14 @@
       const multSize = 2;
       const mapLevel = 74.42;
 
-      const baseColor = 0x595959;
-      const textColor = 0x000000;
-      const highlightColor = 0xffffff;
-	  const nodeBaseColor = 0x990000;
-	  const nodeHighlightColor = 0xac00e6;
+      const edgeBaseColor = 0x595959;
+      const edgeHighlightColor = 0xac00e6;
+
+      const textBaseColor = 0x000000;
+      const textHighlightColor = 0x990000;
+
+	    const nodeBaseColor = 0x990000;
+	    const nodeHighlightColor = 0xac00e6;
 
       function mainFunction()
       {
@@ -35,7 +38,7 @@
           opacity: 1,
           lineWidth: 0.3,
           transparent: true,
-          color: new THREE.Color(baseColor)
+          color: new THREE.Color(edgeBaseColor)
         });
 
 
@@ -154,7 +157,7 @@
           });
           textGeo.computeBoundingBox();
           textGeo.computeVertexNormals();
-          let cubeMat = new THREE.MeshLambertMaterial({color: textColor})
+          let cubeMat = new THREE.MeshLambertMaterial({color: textBaseColor})
           let text = new THREE.Mesh(textGeo, cubeMat)
           text.rotation.x = Math.PI / 2;
           text.rotation.y = Math.PI;
@@ -714,11 +717,11 @@
       	  // The distance from the start node to itself is always 0
           pathLengths[ startVertex ] = 0;
         	//console.log(startVertex);
-			nodeColorChange(startVertex, nodeHighlightColor);
+			    nodeColorChange(startVertex, nodeHighlightColor);
         	updatePathLength(startVertex, parseInt(pathLengths[startVertex]));
-        	changeTColor(startVertex, highlightColor);
+        	changeTColor(startVertex, textHighlightColor);
         	await sleep( 1000 / values.speed );
-        	changeTColor(startVertex, textColor);
+        	changeTColor(startVertex, textBaseColor);
 
           for ( var i = 0; i < numVertices; i++ )
           {
@@ -730,20 +733,20 @@
             {
               // Pause here and light up edges[startVertex][i]
 			  nodeColorChange(i, nodeHighlightColor);
-              colorChange( adj[ startVertex ][ i ], nodeHighlightColor );
+              colorChange( adj[ startVertex ][ i ], edgeHighlightColor );
               // Light up pathLengths[i]
 
 			await sleep( 1000 / values.speed );
 			updatePathLength(i, parseInt(pathLengths[i]));
-      		changeTColor(i, highlightColor);
+      		changeTColor(i, textHighlightColor);
       		await sleep( 1000 / values.speed );
-      		changeTColor(i, textColor);
+      		changeTColor(i, textBaseColor);
 			nodeColorChange(i, nodeBaseColor);
 
 
               //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
               await sleep( 1000 / values.speed );
-              colorChange(adj[startVertex][i], baseColor);
+              colorChange(adj[startVertex][i], edgeBaseColor);
 
 
               predecessors[ i ] = startVertex;
@@ -781,7 +784,7 @@
             while ( temp != startVertex )
             {
               //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
-              colorChange( adj[ predecessors[ temp ] ][ temp ], nodeHighlightColor );
+              colorChange( adj[ predecessors[ temp ] ][ temp ], edgeHighlightColor );
 			  nodeColorChange(temp, nodeHighlightColor);
               temp = predecessors[ temp ];
             }
@@ -814,7 +817,7 @@
                 if ( edges[ closest ][ j ].length != Infinity )
                 {
 				  nodeColorChange(j, nodeHighlightColor);
-                  colorChange( adj[ closest ][ j ], nodeHighlightColor );
+                  colorChange( adj[ closest ][ j ], edgeHighlightColor );
                   //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
                   await sleep( 1000 / values.speed );
 
@@ -835,14 +838,14 @@
                   predecessors[ j ] = closest;
 
             			updatePathLength(j, parseInt(pathLengths[j]));
-            			changeTColor(j, highlightColor);
+            			changeTColor(j, textHighlightColor);
             			await sleep( 1000 / values.speed );
-            			changeTColor(j, textColor);
+            			changeTColor(j, textBaseColor);
 						await sleep( 1000 / values.speed );
                 }
           		  if ( edges[ closest ][ j ].length != Infinity )
                 {
-          			colorChange( adj[ closest ][ j ], baseColor );
+          			colorChange( adj[ closest ][ j ], edgeBaseColor );
 					nodeColorChange(j, nodeBaseColor);
           			//console.log("Current j: " + j + " and Current endVertex = " + endVertex);
           		  }
@@ -856,7 +859,7 @@
             {
               //    UNlight up temp[predecessor[temp]][temp]
               //console.log( adj[ predecessors[ temp ] ][ temp ] );
-              colorChange( adj[ predecessors[ temp ] ][ temp ], baseColor );
+              colorChange( adj[ predecessors[ temp ] ][ temp ], edgeBaseColor );
 			  nodeColorChange(temp, nodeBaseColor);
               temp = predecessors[ temp ];
             }
@@ -948,7 +951,7 @@
 				nodeColorChange(i, nodeBaseColor);
         			for (var j = 0; j < 22; j++){
         				if (adjacencies[ i][ j ] != Infinity) {
-        					colorChange( adjacencies[ i][ j ], baseColor );
+        					colorChange( adjacencies[ i][ j ], edgeBaseColor );
         				}
         			}
         		}
