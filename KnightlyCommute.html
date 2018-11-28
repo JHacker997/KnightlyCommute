@@ -933,34 +933,37 @@
 
         gui.add(values, 'speed', 0.5, 5, 0.1).name( "Speed" );
 
+        function Clear(){
+          //console.log("clear clicked")
+          if (!isRunning){
+
+            for (var i = 0; i < 22; i++) {
+            updatePathLength(i, Infinity);
+            nodeColorChange(i, nodeBaseColor);
+              for (var j = 0; j < 22; j++){
+                if (adjacencies[ i][ j ] != Infinity) {
+                  colorChange( adjacencies[ i][ j ], edgeBaseColor );
+                }
+              }
+            }
+
+          }
+        }
+
+
+        var button2 = {Clear(){Clear()} };
+
         var button = { Start:function(){
-        	//console.log("start clicked")
-        	if (!isRunning){
-        		isRunning = true;
-        		shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies);
+          //console.log("start clicked")
+          if (!isRunning){
+            Clear();
+            isRunning = true;
+            shortestPathInfo = shortestPath( edgeMatrix, 22, values.startingNode, values.endingNode, adjacencies);
           }
 
         }};
-        gui.add(button,'Start');
 
-
-        var button2 = { Clear:function(){
-        	//console.log("clear clicked")
-        	if (!isRunning){
-
-        		for (var i = 0; i < 22; i++) {
-      			updatePathLength(i, Infinity);
-				nodeColorChange(i, nodeBaseColor);
-        			for (var j = 0; j < 22; j++){
-        				if (adjacencies[ i][ j ] != Infinity) {
-        					colorChange( adjacencies[ i][ j ], edgeBaseColor );
-        				}
-        			}
-        		}
-
-          }
-
-        }};
+        gui.add(button,'Start');      
         gui.add(button2,'Clear');
 
         //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
