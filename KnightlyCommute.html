@@ -987,14 +987,14 @@
         light.penumbra = 0.8;
         light.distance = 130;
 
-        let mtlLaptopLoader = new THREE.MTLLoader();
+        let mtlPhoneLoader = new THREE.MTLLoader();
 
-        mtlLaptopLoader.load( "./phone/elc001.mtl", function( materials ) {
+        mtlPhoneLoader.load( "./phone/elc001.mtl", function( materials ) {
           materials.preload();
 
-          let objLaptopLoader = new THREE.OBJLoader();
-          objLaptopLoader.setMaterials( materials );
-          objLaptopLoader.load( "./phone/elc001.obj", function( obj ) {
+          let objPhoneLoader = new THREE.OBJLoader();
+          objPhoneLoader.setMaterials( materials );
+          objPhoneLoader.load( "./phone/elc001.obj", function( obj ) {
             obj.position.y = 74;
             obj.position.x = -60;
             obj.position.z = -10
@@ -1005,6 +1005,47 @@
             render();
           } );
         } );
+
+        let mtlWineLoader = new THREE.MTLLoader();
+
+        mtlWineLoader.load( "./wine/Wine_Bottle_White.mtl", function( materials ) {
+          materials.preload();
+
+          let objWineLoader = new THREE.OBJLoader();
+          objWineLoader.setMaterials( materials );
+          objWineLoader.load( "./wine/Wine_Bottle_White.obj", function( obj ) {
+            obj.position.y = 74;
+            obj.position.x = -30;
+            obj.position.z = -15;
+            // if it's white whine, need 90 degree turn
+            obj.rotation.y = Math.PI/2;
+            //obj.rotation.z = Math.PI;
+            obj.scale.set(125, 125, 125);
+            scene.add( obj );
+            render();
+          } );
+        } );
+
+        let mtlGlassLoader = new THREE.MTLLoader();
+
+        mtlGlassLoader.load( "./wine/wineglass.mtl", function( materials ) {
+          materials.preload();
+
+          let objGlassLoader = new THREE.OBJLoader();
+          objGlassLoader.setMaterials( materials );
+          objGlassLoader.load( "./wine/wineglass.obj", function( obj ) {
+            obj.position.y = 80;
+            obj.position.x = -40;
+            obj.position.z = -5;
+            //obj.rotation.y = Math.PI/2;
+            //obj.rotation.z = Math.PI;
+            obj.scale.set(2, 2, 2);
+            scene.add( obj );
+            render();
+          } );
+        } );
+
+
         window.addEventListener( "resize", resize, false )
       }
 
