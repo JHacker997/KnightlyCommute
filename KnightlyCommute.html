@@ -15,7 +15,7 @@
       const multSize = 2;
       const mapLevel = 74.42;
 
-      const baseColor = 0x80ccff;
+      const baseColor = 0x595959;
       const textColor = 0x000000;
       const highlightColor = 0xac00e6;
 
@@ -30,7 +30,7 @@
         document.body.appendChild( renderer.domElement );
 
         var materialLine = new MeshLineMaterial( {
-          opacity: 0.7,
+          opacity: 1,
           lineWidth: 0.3,
           transparent: true,
           color: new THREE.Color(baseColor)
@@ -186,7 +186,7 @@
           color: 0x00ff00
         } );
         let nodeMaterial = new THREE.MeshLambertMaterial( {
-          color: 0xff0000
+          color: 0x990000
         } );
         let cylinderArray = [];
         let intermedNodesArray = new Array();
@@ -646,7 +646,7 @@
         {
 
           var materialLineHighlight = new MeshLineMaterial( {
-            opacity: 0.7,
+            opacity: 1,
             lineWidth: 0.3,
             transparent: true,
             color: new THREE.Color(color)
