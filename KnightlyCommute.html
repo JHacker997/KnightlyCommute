@@ -987,7 +987,24 @@
         light.penumbra = 0.8;
         light.distance = 130;
 
+        let mtlLaptopLoader = new THREE.MTLLoader();
 
+        mtlLaptopLoader.load( "./phone/elc001.mtl", function( materials ) {
+          materials.preload();
+
+          let objLaptopLoader = new THREE.OBJLoader();
+          objLaptopLoader.setMaterials( materials );
+          objLaptopLoader.load( "./phone/elc001.obj", function( obj ) {
+            obj.position.y = 74;
+            obj.position.x = -60;
+            obj.position.z = -10
+            obj.rotation.x = - Math.PI/2;
+            obj.rotation.z = Math.PI;
+            obj.scale.set(0.1, 0.1, 0.1);
+            scene.add( obj );
+            render();
+          } );
+        } );
         window.addEventListener( "resize", resize, false )
       }
 
