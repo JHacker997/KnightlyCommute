@@ -970,7 +970,7 @@
           let objLampLoader = new THREE.OBJLoader();
           objLampLoader.setMaterials( materials );
           objLampLoader.load( "./lamp/lamp_bronze.obj", function( obj ) {
-            obj.position.y = 76;
+            obj.position.y = 74;
             obj.position.x = 50;
             obj.rotation.y = - Math.PI/2;
             scene.add( obj );
@@ -986,6 +986,7 @@
         light.angle = 1.2 * Math.PI / 4;
         light.penumbra = 0.8;
         light.distance = 130;
+
 
         window.addEventListener( "resize", resize, false )
       }
