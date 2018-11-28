@@ -7,12 +7,17 @@
     <script src= "https://threejs.org/examples/js/libs/dat.gui.min.js"> </script>
     <script src= "https://threejs.org/examples/js/loaders/OBJLoader.js"> </script>
     <script src= "https://threejs.org/examples/js/loaders/MTLLoader.js"> </script>
+    <script src="THREE.MeshLine.js"></script>
 
 
     <script>
       // Add your own Javascript code/methods here.
       const multSize = 2;
       const mapLevel = 74.42;
+
+      const baseColor = 0x80ccff;
+      const textColor = 0x000000;
+      const highlightColor = 0xac00e6;
 
       function mainFunction()
       {
@@ -23,6 +28,15 @@
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setClearColor( 0x888888, 1 );
         document.body.appendChild( renderer.domElement );
+
+        var materialLine = new MeshLineMaterial( {
+          opacity: 0.7,
+          lineWidth: 0.3,
+          transparent: true,
+          color: new THREE.Color(baseColor)
+        });
+
+        
 
         let scene = new THREE.Scene();
 
@@ -132,7 +146,7 @@
           });
           textGeo.computeBoundingBox();
           textGeo.computeVertexNormals();
-          let cubeMat = new THREE.MeshLambertMaterial({color: 0x000000})
+          let cubeMat = new THREE.MeshLambertMaterial({color: textColor})
           let text = new THREE.Mesh(textGeo, cubeMat)
           text.rotation.x = Math.PI / 2;
           text.rotation.y = Math.PI;
@@ -290,9 +304,6 @@
 
         function createLineVector( v1, v2, index, addPoints )
         {
-          linematerial = new THREE.LineBasicMaterial( {
-            color: 0x0000ff
-          } );
 
           let numLines = 0;
 
@@ -319,7 +330,11 @@
               if ( pointsLine == 2 )
               {
                 lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
-                lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
+
+                var meshLine = new MeshLine();
+                meshLine.setGeometry(liner);
+
+                lineGeometryArray[ index ].push( new THREE.Mesh( meshLine.geometry, materialLine ) );
                 scene.add( lineGeometryArray[ index ][ numLines++ ] );
                 point1 = new THREE.Vector3( addPoints[ i ].position.x, 74.8, addPoints[ i ].position.z );
                 liner.vertices.push(
@@ -336,7 +351,11 @@
 
             if ( pointsLine == 2 ) {
               lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
-              lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
+
+              var meshLine = new MeshLine();
+              meshLine.setGeometry(liner);
+
+              lineGeometryArray[ index ].push( new THREE.Mesh( meshLine.geometry, materialLine ) );
               scene.add( lineGeometryArray[ index ][ numLines++ ] );
               pointsLine = 1;
             }
@@ -348,7 +367,9 @@
               new THREE.Vector3( v1.x, 74.8, v1.z ),
               new THREE.Vector3( v2.x, 74.8, v2.z )
             );
-            lineGeometryArray[ index ].push( new THREE.Line( liner, linematerial ) );
+            var meshLine = new MeshLine();
+            meshLine.setGeometry(liner);
+            lineGeometryArray[ index ].push( new THREE.Mesh( meshLine.geometry, materialLine ) );
             scene.add( lineGeometryArray[ index ][ numLines ] );
           }
 
@@ -623,8 +644,16 @@
 
         function colorChange( index, color )
         {
+
+          var materialLineHighlight = new MeshLineMaterial( {
+            opacity: 0.7,
+            lineWidth: 0.3,
+            transparent: true,
+            color: new THREE.Color(color)
+          });
+
           lineGeometryArray[ index ].forEach( function( line ) {
-            line.material.color = new THREE.Color( color );
+            line.material = materialLineHighlight;
             line.material.needsUpdate = true;
             render();
           } );
@@ -667,9 +696,9 @@
           pathLengths[ startVertex ] = 0;
         	//console.log(startVertex);
         	updatePathLength(startVertex, parseInt(pathLengths[startVertex]));
-        	changeTColor(startVertex, 0x000fff);
+        	changeTColor(startVertex, highlightColor);
         	await sleep( 1000 / values.speed );
-        	changeTColor(startVertex, 0x000000);
+        	changeTColor(startVertex, textColor);
 
           for ( var i = 0; i < numVertices; i++ )
           {
@@ -680,18 +709,18 @@
             if ( edges[ startVertex ][ i ].length != Infinity )
             {
               // Pause here and light up edges[startVertex][i]
-              colorChange( adj[ startVertex ][ i ], 0xff0000 );
+              colorChange( adj[ startVertex ][ i ], highlightColor );
               // Light up pathLengths[i]
 
       		updatePathLength(i, parseInt(pathLengths[i]));
-      		changeTColor(i, 0x000fff);
+      		changeTColor(i, highlightColor);
       		await sleep( 1000 / values.speed );
-      		changeTColor(i, 0x000000);
+      		changeTColor(i, textColor);
 
 
               //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
               await sleep( 1000 / values.speed );
-              colorChange(adj[startVertex][i], 0x0000ff);
+              colorChange(adj[startVertex][i], baseColor);
 
 
               predecessors[ i ] = startVertex;
@@ -728,7 +757,7 @@
             while ( temp != startVertex )
             {
               //console.log( "Light up [" + predecessors[ temp ] + "][" + temp + "]" );
-              colorChange( adj[ predecessors[ temp ] ][ temp ], 0xff0000 );
+              colorChange( adj[ predecessors[ temp ] ][ temp ], highlightColor );
               temp = predecessors[ temp ];
             }
 
@@ -758,7 +787,7 @@
                 // PAUSE: light up edges[closest][j]
                 if ( edges[ closest ][ j ].length != Infinity )
                 {
-                  colorChange( adj[ closest ][ j ], 0xff0000 );
+                  colorChange( adj[ closest ][ j ], highlightColor );
                   //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
                   await sleep( 1000 / values.speed );
 
@@ -779,13 +808,13 @@
                   predecessors[ j ] = closest;
 
             			updatePathLength(j, parseInt(pathLengths[j]));
-            			changeTColor(j, 0x000fff);
+            			changeTColor(j, highlightColor);
             			await sleep( 1000 / values.speed );
-            			changeTColor(j, 0x000000);
+            			changeTColor(j, textColor);
                 }
           		  if ( edges[ closest ][ j ].length != Infinity )
                 {
-          			colorChange( adj[ closest ][ j ], 0x0000ff );
+          			colorChange( adj[ closest ][ j ], baseColor );
           			//console.log("Current j: " + j + " and Current endVertex = " + endVertex);
           		  }
               }
@@ -798,7 +827,7 @@
             {
               //    UNlight up temp[predecessor[temp]][temp]
               //console.log( adj[ predecessors[ temp ] ][ temp ] );
-              colorChange( adj[ predecessors[ temp ] ][ temp ], 0x0000ff );
+              colorChange( adj[ predecessors[ temp ] ][ temp ], baseColor );
               temp = predecessors[ temp ];
             }
 
