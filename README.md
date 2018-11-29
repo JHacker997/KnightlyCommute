@@ -1,4 +1,4 @@
-#Computer Graphics group project at the University of Central Florida.<br />#
+# Computer Graphics group project at the University of Central Florida. #<br />
 Group : Shelby Basco, Julia Berger, John Hacker, Nestor Montejo
 
 This project is a visual representation of Shortest path calculation using Dijkstra's algorithm.
