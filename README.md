@@ -1,10 +1,10 @@
 # Computer Graphics group project at the University of Central Florida.<br />
 Group : Shelby Basco, Julia Berger, John Hacker, Nestor Montejo
 
-This project is a visual representation of Shortest path calculation using Dijkstra's algorithm.
+    This project is a visual representation of Shortest path calculation using Dijkstra's algorithm.
 The algorithm works on a map representing UCF and the nearby surrounding areas and calculates the shortest path from any given intersection on the map to another.
 
-The weight of each edge is a scalar representing the distance it takes to get from one intersection to the next, and the algorithm is shown taking each road, and backtracking when its not on the shortest path.
+    The weight of each edge is a scalar representing the distance it takes to get from one intersection to the next, and the algorithm is shown taking each road, and backtracking when its not on the shortest path.
 
 The letter and number belowjavas any given node represent the index of the node (the letter) and the current shortest distance(the number) to get from the start node to that node. By default the distance is set to infinity.
 
