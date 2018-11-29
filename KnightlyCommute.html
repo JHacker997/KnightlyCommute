@@ -890,8 +890,6 @@
                   colorChange( adj[ closest ][ j ], edgeHighlightColor );
                   //console.log( "Currently inspecting edge between [" + closest + "] and [" + j + "]" );
                   await sleep( 1000 / values.speed );
-
-
                 }
 
                 // If this distance is shorter than the current stored path length
@@ -1021,7 +1019,7 @@
                 }
               }
             }
-            
+
             if (clearable)
             {
               clearable = false;
@@ -1056,7 +1054,6 @@
         //shortestPathInfo = shortestPath( edgeMatrix, 22, 0, 10, adjacencies );
 
         //console.log( shortestPathInfo );
-
 
         window.addEventListener( "resize", resize, false )
       }
