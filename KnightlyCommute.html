@@ -742,10 +742,11 @@
       		changeTColor(i, textHighlightColor);
       		await sleep( 1000 / values.speed );
       		changeTColor(i, textBaseColor);
-    			nodeColorChange(i, nodeBaseColor);
+    			
 
               //console.log( "Initializing path [" + startVertex + "][" + i + "]" + " to " + pathLengths[ i ] );
               await sleep( 1000 / values.speed );
+			  nodeColorChange(i, nodeBaseColor);
               colorChange(adj[startVertex][i], edgeBaseColor);
 
               predecessors[ i ] = startVertex;
