@@ -68,6 +68,7 @@
 
         let render = function()
         {
+          requestAnimationFrame(render)
           renderer.render( scene, camera );
         };
 
@@ -1014,12 +1015,17 @@
               nodeColorChange(i, nodeBaseColor);
               for (var j = 0; j < 22; j++)
               {
-                if (adjacencies[ i][ j ] != Infinity)
+                if (adjacencies[ i ][ j ] != Infinity)
                 {
-                  colorChange( adjacencies[ i][ j ], edgeBaseColor );
+                  colorChange( adjacencies[ i ][ j ], edgeBaseColor );
                 }
               }
             }
+            if (clearable)
+            {
+              clearable = false;
+            }
+            render();
           }
         }
 
