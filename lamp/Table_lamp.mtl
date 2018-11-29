@@ -1,0 +1,30 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.187496374)
+
+newmtl DefaultMaterial
+Kd 0.8 0.8 0.8
+illum 1
+
+newmtl Table lamp lamp
+Kd 0.992157 0.988235 0.74902
+Ka 0.992157 0.988235 0.74902
+Ks 1.2 1.2 1.2
+Ke 0.980392 0.976471 0.729412
+Ns 1024
+illum 2
+
+newmtl Table lamp metallic
+Kd 0.239216 0.262745 0.752941
+Ka 0.239216 0.262745 0.752941
+Ks 0 0 0
+Ns 2
+illum 2
+
+newmtl Table lamp metallic 2
+Kd 0.976471 0.976471 0.976471
+Ka 0.976471 0.976471 0.976471
+Ks 0.218353 0.218353 0.218353
+Ke 0 0 0
+Ns 55.7152
+illum 2
+

@@ -53,7 +53,7 @@
         let light = new THREE.SpotLight( 0xffffff, 1, 100 );
         light.castShadow = true;
         light.position.set( 0, 100, 1 );
-        scene.add( light );
+        //scene.add( light );
         let ambient = new THREE.AmbientLight( 0xffffff, 0.3 );
         scene.add( ambient );
 
@@ -964,15 +964,16 @@
 
         let mtlLampLoader = new THREE.MTLLoader();
 
-        mtlLampLoader.load( "./lamp/lamp_bronze.mtl", function( materials ) {
+        mtlLampLoader.load( "./lamp/Table_lamp.mtl", function( materials ) {
           materials.preload();
 
           let objLampLoader = new THREE.OBJLoader();
           objLampLoader.setMaterials( materials );
-          objLampLoader.load( "./lamp/lamp_bronze.obj", function( obj ) {
-            obj.position.y = 74;
+          objLampLoader.load( "./lamp/Table_lamp.obj", function( obj ) {
+            obj.position.y = 109;
             obj.position.x = 50;
-            obj.rotation.y = - Math.PI/2;
+            //obj.rotation.y = - Math.PI/2;
+            obj.scale.set(0.08, 0.08, 0.08);
             scene.add( obj );
             render();
           } );
@@ -981,6 +982,7 @@
         let testLightSphereGeometry = new THREE.SphereGeometry(5, 5, 5);
         let sphereMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
         let sphere = new THREE.Mesh(testLightSphereGeometry, sphereMaterial);
+        //sphere.position.set(35, 130, 0);
         //scene.add(sphere);
         light.position.set(5, 76+45, 1);
         light.angle = 1.2 * Math.PI / 4;
@@ -1045,6 +1047,10 @@
           } );
         } );
 
+        let pointerLight = new THREE.PointLight( 0xffffff, 0.9);
+        scene.add(pointerLight);
+        pointerLight.distance = 150;
+        pointerLight.position.set(35, 130, 0);
 
         window.addEventListener( "resize", resize, false )
       }
