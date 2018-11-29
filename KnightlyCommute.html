@@ -36,7 +36,7 @@
         renderer.setClearColor( 0x888888, 1 );
         document.body.appendChild( renderer.domElement );
 
-        var materialLine = new MeshLineMaterial( {
+        let materialLine = new MeshLineMaterial( {
           opacity: 1,
           lineWidth: 0.3,
           transparent: true,
@@ -68,7 +68,7 @@
 
         let render = function()
         {
-          requestAnimationFrame(render)
+          //requestAnimationFrame(render)
           renderer.render( scene, camera );
         };
 
@@ -194,7 +194,7 @@
          * Show text on map.
          * Params: LoadFont('text', xPosition, zPosition, scaleMultiplier)
          */
-        var texts = [ ...Array( 22 ) ];
+        let texts = [ ...Array( 22 ) ];
         for (let i = 0; i < 22; i++)
         {
           texts[i] = null;
@@ -418,7 +418,7 @@
               {
                 lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
 
-                var meshLine = new MeshLine();
+                let meshLine = new MeshLine();
                 meshLine.setGeometry(liner);
 
                 lineGeometryArray[ index ].push( new THREE.Mesh( meshLine.geometry, materialLine ) );
@@ -439,7 +439,7 @@
             if ( pointsLine == 2 ) {
               lineMathArray[ index ].push( new THREE.Line3( point1, point2 ) );
 
-              var meshLine = new MeshLine();
+              let meshLine = new MeshLine();
               meshLine.setGeometry(liner);
 
               lineGeometryArray[ index ].push( new THREE.Mesh( meshLine.geometry, materialLine ) );
@@ -454,7 +454,7 @@
               new THREE.Vector3( v1.x, 74.8, v1.z ),
               new THREE.Vector3( v2.x, 74.8, v2.z )
             );
-            var meshLine = new MeshLine();
+            let meshLine = new MeshLine();
             meshLine.setGeometry(liner);
             lineGeometryArray[ index ].push( new THREE.Mesh( meshLine.geometry, materialLine ) );
             scene.add( lineGeometryArray[ index ][ numLines ] );
@@ -684,9 +684,9 @@
           this.lines = lines;
         }
 
-        var _ = Infinity;
+        let _ = Infinity;
 
-        var adjacencies = [
+        let adjacencies = [
           //  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
           [ _, 0, _, _, _, _, _, _, _, _, 10, _, _, _, _, _, _, _, _, _, _, 28 ], //0
           [ 0, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ], //1
@@ -712,7 +712,7 @@
           [ 28, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 27, _ ] //21
         ];
 
-        var edgeMatrix = [ ...Array( adjacencies.length ) ].map( e => Array( adjacencies.length ) );
+        let edgeMatrix = [ ...Array( adjacencies.length ) ].map( e => Array( adjacencies.length ) );
 
 
         for ( i = 0; i < adjacencies.length; i++ )
@@ -732,7 +732,7 @@
         function colorChange( index, color )
         {
 
-          var materialLineHighlight = new MeshLineMaterial( {
+          let materialLineHighlight = new MeshLineMaterial( {
             opacity: 1,
             lineWidth: 0.3,
             transparent: true,
@@ -770,7 +770,7 @@
 
         function updatePathLength(index, pathLength)
         {
-        	var letter = String.fromCharCode(0 + + "A".charCodeAt(0) + + index);
+        	let letter = String.fromCharCode(0 + + "A".charCodeAt(0) + + index);
         	if (pathLength !=Infinity)
           {
         		loadFont(letter + " " + pathLength, textArray[index].x, textArray[index].z, textArray[index].scale, index);
@@ -784,10 +784,10 @@
         async function shortestPath( edges, numVertices, startVertex, endVertex, adj )
         {
 
-          var done = new Array( numVertices );
+          let done = new Array( numVertices );
           done[ startVertex ] = true;
-          var pathLengths = new Array( numVertices );
-          var predecessors = new Array( numVertices );
+          let pathLengths = new Array( numVertices );
+          let predecessors = new Array( numVertices );
 
 
       	  // The distance from the start node to itself is always 0
@@ -799,7 +799,7 @@
         	await sleep( 1000 / values.speed );
         	changeTColor(startVertex, textBaseColor);
 
-          for ( var i = 0; i < numVertices; i++ )
+          for ( let i = 0; i < numVertices; i++ )
           {
             // If there is an edge between the starting vertex and this vertex, set the shortest path equal to that path length
             pathLengths[ i ] = edges[ startVertex ][ i ].length;
@@ -828,11 +828,11 @@
             }
           }
 
-          for ( var i = 0; i < numVertices - 1; i++ )
+          for ( let i = 0; i < numVertices - 1; i++ )
           {
-            var closest = -1;
-            var closestDistance = Infinity;
-            for ( var j = 0; j < numVertices; j++ )
+            let closest = -1;
+            let closestDistance = Infinity;
+            for ( let j = 0; j < numVertices; j++ )
             {
               // If we haven't yet looked at this node and the path length currently
               // stored is smaller than the closestDistance
@@ -849,7 +849,7 @@
             //TODO: update value of weight at node
 
             // PAUSE: light up edges[predecessor[closest]][closest]
-            var temp = closest;
+            let temp = closest;
 			      nodeColorChange(closest, nodeHighlightColor);
             while ( temp != startVertex )
             {
@@ -872,7 +872,7 @@
             }
 
 
-            for ( var j = 0; j < numVertices; j++ )
+            for ( let j = 0; j < numVertices; j++ )
             {
 
               // If we haven't looked at this node yet
@@ -881,7 +881,7 @@
 
                 // Take the current closest path length and add the edge between the
                 // closest node and this one
-                var possiblyCloserDistance = pathLengths[ closest ] + edges[ closest ][ j ].length;
+                let possiblyCloserDistance = pathLengths[ closest ] + edges[ closest ][ j ].length;
 
                 // PAUSE: light up edges[closest][j]
                 if ( edges[ closest ][ j ].length != Infinity )
@@ -955,7 +955,7 @@
         function constructPath( shortestPathInfo, endVertex )
         {
           // Empty array to store our path from start to end node
-          var path = [];
+          let path = [];
 
           // We must work backwards from the end node and through the parents of the nodes
           // to construct the path
@@ -989,11 +989,11 @@
         //console.log(lineMathArray[0][0].distance());
 
         //colorChange(0, 0xff0000);
-        var shortestPathInfo;
+        let shortestPathInfo;
 
-        var values = {startingNode: 0, endingNode: 10, speed: 1};
-        var isRunning = false;
-        var gui = new dat.GUI();
+        let values = {startingNode: 0, endingNode: 10, speed: 1};
+        let isRunning = false;
+        let gui = new dat.GUI();
         gui.add(values, "startingNode",
       	   {A : "0", B: "1", C: "2", D: "3", E: "4", F: "5", G: "6", H: "7", I: "8", J: "9", K: "10", L: "11", M: "12", N: "13", O: "14", P: "15", Q: "16", R: "17", S: "18", T: "19", U: "20", V: "21"} )
       	    .name( "Starting Node" );
@@ -1009,30 +1009,30 @@
           console.log("clear clicked")
           if (!isRunning)
           {
-            for (var i = 0; i < 22; i++)
+            for (let i = 0; i < 22; i++)
             {
               updatePathLength(i, Infinity);
               nodeColorChange(i, nodeBaseColor);
-              for (var j = 0; j < 22; j++)
+              for (let j = 0; j < 22; j++)
               {
-                if (adjacencies[ i ][ j ] != Infinity)
+                if (adjacencies[ i][ j ] != Infinity)
                 {
-                  colorChange( adjacencies[ i ][ j ], edgeBaseColor );
+                  colorChange( adjacencies[ i][ j ], edgeBaseColor );
                 }
               }
             }
+            
             if (clearable)
             {
               clearable = false;
             }
-            render();
           }
         }
 
 
-        var button2 = {Clear(){Clear()} };
+        let button2 = {Clear(){Clear()} };
 
-        var button = { Start:function(){
+        let button = { Start:function(){
           //console.log("start clicked")
           if (!isRunning)
           {
